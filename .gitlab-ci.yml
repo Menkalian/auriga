@@ -26,7 +26,7 @@ deploy:
   stage: deploy
   tags:
     - docker
-  script: mvn deploy -DskipTests
+  script: mvn deploy -DskipTests ; echo $MAVEN_REPO_USER ; printenv ; env
   only:
     - master
   artifacts:
