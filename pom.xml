@@ -6,10 +6,23 @@
 
     <groupId>de.menkalian</groupId>
     <artifactId>logprocessor</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1-jdk11</version>
+
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>ec059f43b321-releases</name>
+            <url>http://server.menkalian.de:8081/artifactory/auriga</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>ec059f43b321-snapshots</name>
+            <url>http://server.menkalian.de:8081/artifactory/auriga</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -20,44 +33,20 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
-                <executions>
-                    <execution>
-                        <id>default-compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <encoding>UTF-8</encoding>
-                            <source>1.8</source>
-                            <target>1.8</target>
-                            <compilerArgs>-proc:none</compilerArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>jdk11-compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <encoding>UTF-8</encoding>
-                            <release>11</release>
-                            <compilerArgs>
-                                <arg>-proc:none</arg>
-                                <arg>--add-exports</arg>
-                                <arg>jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>
-                                <arg>--add-exports</arg>
-                                <arg>jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
-                                <arg>--add-exports</arg>
-                                <arg>jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
-                                <arg>--add-exports</arg>
-                                <arg>jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
-                            </compilerArgs>
-                            <multiReleaseOutput>true</multiReleaseOutput>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <compilerArgs>
+                        <arg>-proc:none</arg>
+                        <arg>--add-exports</arg>
+                        <arg>jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>
+                        <arg>--add-exports</arg>
+                        <arg>jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
+                        <arg>--add-exports</arg>
+                        <arg>jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
+                        <arg>--add-exports</arg>
+                        <arg>jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
+                    </compilerArgs>
+                </configuration>
             </plugin>
         </plugins>
     </build>
