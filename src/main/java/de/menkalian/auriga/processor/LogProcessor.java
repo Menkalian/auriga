@@ -28,18 +28,24 @@ public class LogProcessor extends AbstractProcessor {
     @Override
     public synchronized void init (ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        processingEnvironment = (JavacProcessingEnvironment) processingEnv;
-        elementUtils = processingEnvironment.getElementUtils();
-        instance = TreeMaker.instance(processingEnvironment.getContext());
+        if (processingEnv instanceof JavacProcessingEnvironment) {
+            processingEnvironment = (JavacProcessingEnvironment) processingEnv;
+            elementUtils = processingEnvironment.getElementUtils();
+            instance = TreeMaker.instance(processingEnvironment.getContext());
+        }
     }
 
     @Override
     public boolean process (Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        Set<? extends Element> methods = roundEnv.getElementsAnnotatedWith(Log.class);
-        for (Element method : methods) {
-            generateHeaderLogsForMethod(method);
+        if (processingEnvironment != null) {
+            Set<? extends Element> methods = roundEnv.getElementsAnnotatedWith(Log.class);
+            for (Element method : methods) {
+                generateHeaderLogsForMethod(method);
+            }
+            return true;
         }
-        return true;
+
+        return false;
     }
 
     private void generateHeaderLogsForMethod (Element method) {
