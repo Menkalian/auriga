@@ -14,7 +14,8 @@ mavenBuild:
     - mvn package -DskipTests
   artifacts:
     paths:
-      - target
+      - jdk-8-target/target
+      - jdk-11-target/target
     expire_in: 1 week
 
 unitTests:
@@ -31,5 +32,6 @@ deploy:
     - master
   artifacts:
     paths:
-      - target/*.jar
+      - jdk-8-target/target/*.jar
+      - jdk-11-target/target/*.jar
     expire_in: 30 days
