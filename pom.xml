@@ -9,6 +9,19 @@
     <version>0.0.1</version>
     <packaging>pom</packaging>
 
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>ec059f43b321-releases</name>
+            <url>http://server.menkalian.de:8081/artifactory/auriga</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>ec059f43b321-snapshots</name>
+            <url>http://server.menkalian.de:8081/artifactory/auriga</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <modules>
         <module>jdk-8-target</module>
         <module>jdk-11-target</module>
