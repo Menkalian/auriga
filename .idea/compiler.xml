@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/de/menkalian/auriga-jdk8/0.0.1/auriga-jdk8-0.0.1.jar" />
+        </processorPath>
+        <module name="test_gradle_java8.main" />
+      </profile>
+    </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="auriga" target="8" />
-      <module name="logprocessor" target="11" />
-      <module name="processor" target="1.5" />
+      <module name="auriga-kotlin" target="1.8" />
+      <module name="test_gradle_kotlin" target="15" />
+      <module name="test_gradle_kotlin.main" target="15" />
+      <module name="test_gradle_kotlin.test" target="15" />
+      <module name="test_maven_kotlin" target="11" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="auriga" options="-proc:none" />
-      <module name="logprocessor" options="-proc:none --add-exports jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED" />
-      <module name="processor" options="-proc:none --add-exports jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED" />
+      <module name="auriga-jdk11" options="-proc:none --add-exports jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED" />
+      <module name="auriga-jdk8" options="-proc:none" />
     </option>
   </component>
 </project>
