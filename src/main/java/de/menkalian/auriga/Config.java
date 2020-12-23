@@ -48,7 +48,7 @@ public class Config {
 
     private void loadDefaultConfig () {
         loadedProperties.put(CONFIGKEY_BASE, BaseConfig.PRINT.toString());
-        loadedProperties.put(CONFIGKEY_TEMPLATE_CALL, "Executing {{METHOD}} with Params: {\n{{PARAMS}}\n}");
+        loadedProperties.put(CONFIGKEY_TEMPLATE_CALL, "Executing {{METHOD}} with Params: {\n{{PARAMS}}\n}\n");
         loadedProperties.put(CONFIGKEY_TEMPLATE_PARAM, "    {{PARAM_NAME}} : {{PARAM_TYPE}} = {{PARAM_VALUE}}");
 
         selectedBaseConfig = BaseConfig.PRINT;
@@ -87,7 +87,7 @@ public class Config {
         }
 
         loggingMethod = loadedProperties.getProperty(CONFIGKEY_METHOD, "System.out.println");
-        methodTemplate = loadedProperties.getProperty(CONFIGKEY_TEMPLATE_CALL, "Executing {{METHOD}} with Params: {\n{{PARAMS}}\n}");
+        methodTemplate = loadedProperties.getProperty(CONFIGKEY_TEMPLATE_CALL, "Executing {{METHOD}} with Params: {\n{{PARAMS}}\n}\n");
         paramTemplate = loadedProperties.getProperty(CONFIGKEY_TEMPLATE_PARAM, "    {{PARAM_NAME}} : {{PARAM_TYPE}} = {{PARAM_VALUE}}");
     }
 
