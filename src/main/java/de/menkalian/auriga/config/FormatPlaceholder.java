@@ -3,7 +3,7 @@ package de.menkalian.auriga.config;
 public enum FormatPlaceholder {
     PRINTF("%s"),
     SLF4J("{}"),
-    NONE("_");
+    NONE("%s");
 
     private final String placeholder;
 

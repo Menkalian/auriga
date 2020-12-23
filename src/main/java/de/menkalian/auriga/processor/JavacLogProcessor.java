@@ -8,12 +8,15 @@ import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Name;
 import de.menkalian.auriga.Config;
 import de.menkalian.auriga.annotations.Log;
+import de.menkalian.auriga.annotations.NoLog;
+import de.menkalian.auriga.config.Constants;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import java.util.Set;
 
@@ -22,11 +25,13 @@ public class JavacLogProcessor extends AbstractProcessor {
     TreeMaker instance;
     JavacElements elementUtils;
     Config config;
+    private Set<? extends Element> excludedElements;
 
     @Override
     public boolean process (Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (processingEnvironment != null) {
             Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Log.class);
+            excludedElements = roundEnv.getElementsAnnotatedWith(NoLog.class);
             for (Element element : elements) {
                 processElement(element);
             }
@@ -37,6 +42,9 @@ public class JavacLogProcessor extends AbstractProcessor {
     }
 
     public void processElement (Element element) {
+        if (excludedElements.contains(element))
+            return;
+
         ElementKind elementKind = element.getKind();
         if (
                 elementKind == ElementKind.PACKAGE ||
@@ -96,22 +104,64 @@ public class JavacLogProcessor extends AbstractProcessor {
 
     private List<JCTree.JCExpression> generateArgumentsFromMethod (Element method) {
         final JCTree.JCMethodDecl tree = (JCTree.JCMethodDecl) elementUtils.getTree(method);
-        StringBuilder formatStringParameter = new StringBuilder();
-        List<JCTree.JCExpression> formatParameters = List.nil();
+        final String placeholder = config.getSelectedFormatType().getPlaceholder();
+        final Element clazz = method.getEnclosingElement();
 
-        formatStringParameter.append("Executing Method: ").append(method.getSimpleName()).append("%n");
+        String stringToPrint = config.getMethodTemplate();
+        List<JCTree.JCExpression> parametersForFormatter = List.nil();
 
-        for (JCTree.JCVariableDecl parameter : tree.getParameters()) {
-            formatStringParameter.append("Parameter ").append(parameter.name.toString()).append(": %s%n");
-            if (parameter.vartype instanceof JCTree.JCArrayTypeTree) {
-                formatParameters = formatParameters.append(instance.Apply(null, instance.Select(convertStringToJC("java.util.Arrays"), elementUtils.getName("toString")), List.of(instance.Ident(parameter))));
-            } else if (parameter.vartype instanceof JCTree.JCPrimitiveTypeTree) {
-                formatParameters = formatParameters.append(instance.Apply(null, instance.Select(convertStringToJC("String"), elementUtils.getName("valueOf")), List.of(instance.Ident(parameter))));
+        while (stringToPrint.contains(Constants.PLACEHOLDER_THIS) || stringToPrint.contains(Constants.PLACEHOLDER_PARAMS)) {
+            int indexOfThis = stringToPrint.indexOf(Constants.PLACEHOLDER_THIS);
+            int indexOfParams = stringToPrint.indexOf(Constants.PLACEHOLDER_PARAMS);
+            if (indexOfParams == -1 || (indexOfThis < indexOfParams && indexOfThis != -1)) {
+                // Append a "this" as String (= Call toString)
+                if (method.getModifiers().contains(Modifier.STATIC)) {
+                    stringToPrint = stringToPrint.replace(Constants.PLACEHOLDER_THIS, clazz.getSimpleName() + ".class");
+                } else {
+                    stringToPrint = stringToPrint.replace(Constants.PLACEHOLDER_THIS, "%s");
+                    parametersForFormatter = parametersForFormatter.append(instance.Apply(null, convertStringToJC("toString"), List.nil()));
+                }
             } else {
-                formatParameters = formatParameters.append(instance.Apply(null, instance.Select(instance.Ident(parameter), elementUtils.getName("toString")), List.nil()));
+                // Append the parameters
+                String replacement = "";
+
+                for (JCTree.JCVariableDecl parameter : tree.getParameters()) {
+                    // Concatenation seem more reasonable here since StringBuilder does not support replacing CharSequences
+                    //noinspection StringConcatenationInLoop
+                    replacement += config.getParamTemplate();
+
+                    while (replacement.contains(Constants.PLACEHOLDER_PARAM_TYPE))
+                        replacement = replacement.replace(Constants.PLACEHOLDER_PARAM_TYPE, parameter.vartype.toString());
+
+                    while (replacement.contains(Constants.PLACEHOLDER_PARAM_NAME))
+                        replacement = replacement.replace(Constants.PLACEHOLDER_PARAM_NAME, parameter.name.toString());
+
+                    while (replacement.contains(Constants.PLACEHOLDER_PARAM_VALUE)) {
+                        replacement = replacement.replace(Constants.PLACEHOLDER_PARAM_VALUE, placeholder);
+                        parametersForFormatter = parametersForFormatter.append(getArgumentForParameter(parameter));
+                    }
+                }
+
+                stringToPrint = stringToPrint.replace(Constants.PLACEHOLDER_PARAMS, replacement);
             }
         }
-        return formatParameters.prepend(instance.Literal(formatStringParameter.toString()));
+
+        while (stringToPrint.contains(Constants.PLACEHOLDER_CLASS))
+            stringToPrint = stringToPrint.replace(Constants.PLACEHOLDER_CLASS, clazz.getSimpleName());
+
+        while (stringToPrint.contains(Constants.PLACEHOLDER_METHOD))
+            stringToPrint = stringToPrint.replace(Constants.PLACEHOLDER_METHOD, method.getSimpleName());
+
+        return parametersForFormatter.prepend(instance.Literal(stringToPrint));
     }
 
+    private JCTree.JCExpression getArgumentForParameter (JCTree.JCVariableDecl parameter) {
+        if (parameter.vartype instanceof JCTree.JCArrayTypeTree) {
+            return instance.Apply(null, instance.Select(convertStringToJC("java.util.Arrays"), elementUtils.getName("toString")), List.of(instance.Ident(parameter)));
+        } else if (parameter.vartype instanceof JCTree.JCPrimitiveTypeTree) {
+            return instance.Apply(null, instance.Select(convertStringToJC("String"), elementUtils.getName("valueOf")), List.of(instance.Ident(parameter)));
+        } else {
+            return instance.Apply(null, instance.Select(instance.Ident(parameter), elementUtils.getName("toString")), List.nil());
+        }
+    }
 }
