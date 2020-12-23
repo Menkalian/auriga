@@ -6,6 +6,7 @@ import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Name;
+import de.menkalian.auriga.Config;
 import de.menkalian.auriga.annotations.Log;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -16,6 +17,7 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
 import java.util.Set;
 
 @SupportedAnnotationTypes("de.menkalian.auriga.annotations.*")
@@ -24,14 +26,26 @@ public class LogProcessor extends AbstractProcessor {
     JavacProcessingEnvironment processingEnvironment;
     TreeMaker instance;
     JavacElements elementUtils;
+    Config config;
 
     @Override
     public synchronized void init (ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         if (processingEnv instanceof JavacProcessingEnvironment) {
             processingEnvironment = (JavacProcessingEnvironment) processingEnv;
+
             elementUtils = processingEnvironment.getElementUtils();
             instance = TreeMaker.instance(processingEnvironment.getContext());
+
+            // Load config
+            if (processingEnvironment.getOptions().containsKey("Auriga.Config.File")) {
+                config = new Config(processingEnvironment.getOptions().get("Auriga.Config.File"));
+            } else {
+                config = new Config();
+            }
+            System.out.println("Loaded Config: " + config);
+        } else {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.MANDATORY_WARNING, "Unknown Processing-Environment detected! Auriga does not work here properly! Detected Environment: " + processingEnv.getClass().getCanonicalName());
         }
     }
 
@@ -82,7 +96,7 @@ public class LogProcessor extends AbstractProcessor {
             if (parameter.vartype instanceof JCTree.JCArrayTypeTree) {
                 formatParameters = formatParameters.append(instance.Apply(null, instance.Select(convertStringToJC("java.util.Arrays"), elementUtils.getName("toString")), List.of(instance.Ident(parameter))));
             } else if (parameter.vartype instanceof JCTree.JCPrimitiveTypeTree) {
-                formatParameters = formatParameters.append(instance.Ident(parameter));
+                formatParameters = formatParameters.append(instance.Apply(null, instance.Select(convertStringToJC("String"), elementUtils.getName("valueOf")), List.of(instance.Ident(parameter))));
             } else {
                 formatParameters = formatParameters.append(instance.Apply(null, instance.Select(instance.Ident(parameter), elementUtils.getName("toString")), List.nil()));
             }
