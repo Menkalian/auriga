@@ -8,8 +8,8 @@
         <groupId>de.menkalian</groupId>
         <version>0.0.1</version>
     </parent>
-    <artifactId>auriga</artifactId>
-    <version>0.0.1-jdk8</version>
+    <artifactId>auriga-jdk8</artifactId>
+    <version>0.0.1</version>
 
     <distributionManagement>
         <repository>
@@ -32,6 +32,11 @@
 
     <build>
         <sourceDirectory>../src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>../src/main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
