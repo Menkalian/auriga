@@ -13,6 +13,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import java.util.Set;
 
@@ -25,14 +26,32 @@ public class JavacLogProcessor extends AbstractProcessor {
     @Override
     public boolean process (Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (processingEnvironment != null) {
-            Set<? extends Element> methods = roundEnv.getElementsAnnotatedWith(Log.class);
-            for (Element method : methods) {
-                generateHeaderLogsForMethod(method);
+            Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Log.class);
+            for (Element element : elements) {
+                processElement(element);
             }
             return true;
         }
 
         return false;
+    }
+
+    public void processElement (Element element) {
+        ElementKind elementKind = element.getKind();
+        if (
+                elementKind == ElementKind.PACKAGE ||
+                elementKind == ElementKind.CLASS ||
+                elementKind == ElementKind.ENUM ||
+                elementKind == ElementKind.INTERFACE ||
+                elementKind == ElementKind.ANNOTATION_TYPE
+        ) {
+            element.getEnclosedElements().forEach(this::processElement);
+        } else if (
+                elementKind == ElementKind.METHOD ||
+                elementKind == ElementKind.CONSTRUCTOR
+        ) {
+            generateHeaderLogsForMethod(element);
+        }
     }
 
     @Override
@@ -52,6 +71,9 @@ public class JavacLogProcessor extends AbstractProcessor {
 
     private void generateHeaderLogsForMethod (Element method) {
         final JCTree.JCMethodDecl tree = (JCTree.JCMethodDecl) elementUtils.getTree(method);
+        if (tree.body == null) {
+            return;
+        }
         final List<JCTree.JCStatement> stats = tree.body.stats;
         tree.body.stats = stats.prepend(
                 instance.Exec(instance.Apply(null, convertStringToJC("System.out.printf"), generateArgumentsFromMethod(method)))
