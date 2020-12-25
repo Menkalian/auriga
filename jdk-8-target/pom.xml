@@ -6,7 +6,7 @@
     <parent>
         <artifactId>auriga</artifactId>
         <groupId>de.menkalian</groupId>
-        <version>0.0.2</version>
+        <version>1.0.0</version>
     </parent>
     <artifactId>auriga-jdk8</artifactId>
 
@@ -24,10 +24,18 @@
     </distributionManagement>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.menkalian</groupId>
+            <artifactId>auriga-annotation</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <sourceDirectory>../src/main/java</sourceDirectory>
