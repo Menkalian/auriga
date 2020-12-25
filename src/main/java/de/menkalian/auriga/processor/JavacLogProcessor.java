@@ -1,5 +1,6 @@
 package de.menkalian.auriga.processor;
 
+import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.model.JavacElements;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
@@ -10,6 +11,8 @@ import de.menkalian.auriga.Config;
 import de.menkalian.auriga.annotations.Log;
 import de.menkalian.auriga.annotations.NoLog;
 import de.menkalian.auriga.config.Constants;
+import de.menkalian.auriga.config.FormatPlaceholder;
+import de.menkalian.auriga.config.LoggerConfig;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -78,14 +81,50 @@ public class JavacLogProcessor extends AbstractProcessor {
     }
 
     private void generateHeaderLogsForMethod (Element method) {
+        checkLogger(method.getEnclosingElement());
+
         final JCTree.JCMethodDecl tree = (JCTree.JCMethodDecl) elementUtils.getTree(method);
         if (tree.body == null) {
             return;
         }
         final List<JCTree.JCStatement> stats = tree.body.stats;
+
+        JCTree.JCMethodInvocation logInvocation;
+        if (config.getSelectedFormatPlaceholder() == FormatPlaceholder.NONE) {
+            logInvocation = instance.Apply(null, convertStringToJC(config.getLoggingMethod()), List.of(instance.Apply(null, convertStringToJC("String.format"), generateArgumentsFromMethod(method))));
+        } else {
+            logInvocation = instance.Apply(null, convertStringToJC(config.getLoggingMethod()), generateArgumentsFromMethod(method));
+        }
         tree.body.stats = stats.prepend(
-                instance.Exec(instance.Apply(null, convertStringToJC("System.out.printf"), generateArgumentsFromMethod(method)))
+                instance.Exec(logInvocation)
         );
+    }
+
+    private void checkLogger (Element enclosingElement) {
+        if (config.getSelectedLoggerConfig() == LoggerConfig.NONE)
+            return;
+
+        JCTree classTree = elementUtils.getTree(enclosingElement);
+        JCTree.JCClassDecl classDeclTree = (JCTree.JCClassDecl) classTree.getTree();
+        boolean hasLog = classDeclTree.defs.stream()
+                                           .filter(tree -> tree instanceof JCTree.JCVariableDecl)
+                                           .map(tree -> (JCTree.JCVariableDecl) tree)
+                                           .anyMatch(tree -> tree.name.contentEquals("log"));
+        if (!hasLog) {
+            JCTree.JCVariableDecl logDefTree = instance.VarDef(
+                    instance.Modifiers(Flags.PRIVATE | Flags.STATIC | Flags.FINAL),
+                    elementUtils.getName("log"),
+                    convertStringToJC(config.getSelectedLoggerConfig().getClazz()),
+                    generateLoggerInit(enclosingElement));
+            classDeclTree.defs = classDeclTree.defs.prepend(logDefTree);
+        }
+    }
+
+    private JCTree.JCExpression generateLoggerInit (Element classElement) {
+        String[] provisioningData = config.getSelectedLoggerConfig().getProvisioning().split("\\(");
+        String provisioningMethod = provisioningData[0];
+        String provisioningArgument = provisioningData[1].split("\\)")[0].replace(Constants.PLACEHOLDER_CLASS, classElement.getSimpleName());
+        return instance.Apply(null, convertStringToJC(provisioningMethod), List.of(convertStringToJC(provisioningArgument)));
     }
 
     private JCTree.JCExpression convertStringToJC (String ref) {

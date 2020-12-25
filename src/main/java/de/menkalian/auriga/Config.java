@@ -58,26 +58,27 @@ public class Config {
     private void initBaseConfig () {
         switch (selectedBaseConfig) {
             case PRINT:
-                loadedProperties.put(CONFIGKEY_PLACEHOLDER, "PRINTF");
-                loadedProperties.put(CONFIGKEY_METHOD, "System.out.printf");
-                loadedProperties.put(CONFIGKEY_LOGGER, "NONE");
+                loadedProperties.putIfAbsent(CONFIGKEY_PLACEHOLDER, "PRINTF");
+                loadedProperties.putIfAbsent(CONFIGKEY_METHOD, "System.out.printf");
+                loadedProperties.putIfAbsent(CONFIGKEY_LOGGER, "NONE");
                 break;
             case SLF4J:
-                loadedProperties.put(CONFIGKEY_PLACEHOLDER, "SLF4J");
-                loadedProperties.put(CONFIGKEY_METHOD, "log.debug");
-                loadedProperties.put(CONFIGKEY_LOGGER, "SLF4J");
+                loadedProperties.putIfAbsent(CONFIGKEY_PLACEHOLDER, "SLF4J");
+                loadedProperties.putIfAbsent(CONFIGKEY_METHOD, "log.debug");
+                loadedProperties.putIfAbsent(CONFIGKEY_LOGGER, "SLF4J");
                 break;
             default:
                 System.err.println("UNKNOWN BASE CONFIG. Maybe you are using an outdated version. Loading defaults for PRINT!");
-                loadedProperties.put(CONFIGKEY_PLACEHOLDER, "PRINTF");
-                loadedProperties.put(CONFIGKEY_METHOD, "System.out.printf");
-                loadedProperties.put(CONFIGKEY_LOGGER, "NONE");
+                loadedProperties.putIfAbsent(CONFIGKEY_PLACEHOLDER, "PRINTF");
+                loadedProperties.putIfAbsent(CONFIGKEY_METHOD, "System.out.printf");
+                loadedProperties.putIfAbsent(CONFIGKEY_LOGGER, "NONE");
                 break;
         }
     }
 
     private void loadConfigFromProperties () {
         selectedBaseConfig = BaseConfig.valueOf(loadedProperties.getProperty(CONFIGKEY_BASE, BaseConfig.PRINT.toString()));
+        initBaseConfig();
         selectedFormatPlaceholder = FormatPlaceholder.valueOf(loadedProperties.getProperty(CONFIGKEY_PLACEHOLDER, FormatPlaceholder.NONE.toString()));
         selectedLoggerConfig = LoggerConfig.valueOf(loadedProperties.getProperty(CONFIGKEY_LOGGER, LoggerConfig.NONE.toString()));
 
