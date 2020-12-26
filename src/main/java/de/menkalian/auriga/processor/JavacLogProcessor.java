@@ -99,16 +99,26 @@ public class JavacLogProcessor extends AbstractProcessor {
         } else {
             logInvocation = instance.Apply(null, convertStringToJC(config.getLoggingMethod()), generateArgumentsFromMethod(method));
         }
-        tree.body.stats = stats.prepend(
-                instance.Exec(logInvocation)
-        );
+        if (stats.get(0).toString().startsWith("super")) {
+            List<JCTree.JCStatement> newStats = List.of(stats.get(0)).append(instance.Exec(logInvocation));
+
+            for (int i = 1 ; i < stats.size() ; i++) {
+                newStats = newStats.append(stats.get(i));
+            }
+
+            tree.body.stats = newStats;
+        } else {
+            tree.body.stats = stats.prepend(
+                    instance.Exec(logInvocation)
+            );
+        }
     }
 
     private void checkLogger (Element enclosingElement) {
         if (config.getSelectedLoggerConfig() == LoggerConfig.NONE)
             return;
 
-        if (!enclosingElement.getModifiers().contains(Modifier.STATIC))
+        if (enclosingElement.getEnclosingElement().getKind() != ElementKind.PACKAGE)
             return;
 
         JCTree classTree = elementUtils.getTree(enclosingElement);
