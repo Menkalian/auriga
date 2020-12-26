@@ -21,6 +21,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
 import java.util.Set;
 
 public class JavacLogProcessor extends AbstractProcessor {
@@ -48,6 +49,7 @@ public class JavacLogProcessor extends AbstractProcessor {
         if (excludedElements.contains(element))
             return;
 
+        processingEnvironment.getMessager().printMessage(Diagnostic.Kind.NOTE, "AURIGA: Processing " + element);
         ElementKind elementKind = element.getKind();
         if (
                 elementKind == ElementKind.PACKAGE ||
@@ -56,11 +58,13 @@ public class JavacLogProcessor extends AbstractProcessor {
                 elementKind == ElementKind.INTERFACE ||
                 elementKind == ElementKind.ANNOTATION_TYPE
         ) {
+            processingEnvironment.getMessager().printMessage(Diagnostic.Kind.OTHER, "AURIGA: Processing children of " + element);
             element.getEnclosedElements().forEach(this::processElement);
         } else if (
                 elementKind == ElementKind.METHOD ||
                 elementKind == ElementKind.CONSTRUCTOR
         ) {
+            processingEnvironment.getMessager().printMessage(Diagnostic.Kind.OTHER, "AURIGA: Generating Logs for " + element);
             generateHeaderLogsForMethod(element);
         }
     }
@@ -102,6 +106,9 @@ public class JavacLogProcessor extends AbstractProcessor {
 
     private void checkLogger (Element enclosingElement) {
         if (config.getSelectedLoggerConfig() == LoggerConfig.NONE)
+            return;
+
+        if (!enclosingElement.getModifiers().contains(Modifier.STATIC))
             return;
 
         JCTree classTree = elementUtils.getTree(enclosingElement);
