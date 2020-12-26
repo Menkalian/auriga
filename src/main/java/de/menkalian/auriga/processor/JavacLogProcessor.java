@@ -84,7 +84,7 @@ public class JavacLogProcessor extends AbstractProcessor {
         checkLogger(method.getEnclosingElement());
 
         final JCTree.JCMethodDecl tree = (JCTree.JCMethodDecl) elementUtils.getTree(method);
-        if (tree.body == null) {
+        if (tree == null || tree.body == null) {
             return;
         }
         final List<JCTree.JCStatement> stats = tree.body.stats;
