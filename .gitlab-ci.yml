@@ -1,5 +1,6 @@
 stages:
-  - build
+  - build-libs
+  - build-plugins
   - test
   - deploy
 
@@ -9,7 +10,7 @@ default:
     - docker
 
 mavenBuild:
-  stage: build
+  stage: build-libs
   script:
     - mvn package -DskipTests
   artifacts:
@@ -19,7 +20,7 @@ mavenBuild:
     expire_in: 1 week
 
 gradlePluginBuild:
-  stage: build
+  stage: build-plugins
   image: gradle
   dependencies:
     - kotlinPluginBuild
@@ -32,7 +33,7 @@ gradlePluginBuild:
     expire_in: 1 week
 
 kotlinPluginBuild:
-  stage: build
+  stage: build-libs
   image: gradle
   script:
     - cd auriga-kotlin-plugin
