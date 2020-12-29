@@ -38,6 +38,8 @@ gradlePluginBuild:
   script:
     - cd auriga-gradle-plugin
     - gradle publishToMavenLocal
+  after_script:
+    - cat /home/gradle/.gradle/daemon/6.7.1/*
   artifacts:
     paths:
       - auriga-gradle-plugin/build
