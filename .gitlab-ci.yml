@@ -24,7 +24,7 @@ kotlinPluginBuild:
   image: gradle:6.7
   script:
     - cd auriga-kotlin-plugin
-    - gradle publishToMavenLocal
+    - gradle --no-daemon publishToMavenLocal
     - cat /home/gradle/.gradle/daemon/6.7.1/*
   after_script:
     - cat /home/gradle/.gradle/daemon/6.7.1/*
@@ -41,7 +41,7 @@ gradlePluginBuild:
     - kotlinPluginBuild
   script:
     - cd auriga-gradle-plugin
-    - gradle publishToMavenLocal
+    - gradle --no-daemon publishToMavenLocal
   artifacts:
     paths:
       - auriga-gradle-plugin/build
@@ -70,7 +70,7 @@ gradlePluginPublish:
   image: gradle:6.7
   script:
     - cd auriga-gradle-plugin
-    - gradle publish
+    - gradle --no-daemon publish
   artifacts:
     paths:
       - auriga-gradle-plugin/build/libs/*.jar
@@ -81,7 +81,7 @@ kotlinPluginPublish:
   image: gradle:6.7
   script:
     - cd auriga-kotlin-plugin
-    - gradle publish
+    - gradle --no-daemon publish
   artifacts:
     paths:
       - auriga-kotlin-plugin/build/libs/*.jar
