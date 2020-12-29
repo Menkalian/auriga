@@ -15,7 +15,31 @@ mavenBuild:
   artifacts:
     paths:
       - jdk-8-target/target
-      - jdk-11-target/target
+      - jdk-9-target/target
+    expire_in: 1 week
+
+gradlePluginBuild:
+  stage: build
+  image: gradle
+  dependencies:
+    - kotlinPluginBuild
+  script:
+    - cd auriga-gradle-plugin
+    - gradle publishToMavenLocal
+  artifacts:
+    paths:
+      - auriga-gradle-plugin/build
+    expire_in: 1 week
+
+kotlinPluginBuild:
+  stage: build
+  image: gradle
+  script:
+    - cd auriga-kotlin-plugin
+    - gradle publishToMavenLocal
+  artifacts:
+    paths:
+      - auriga-kotlin-plugin/build
     expire_in: 1 week
 
 unitTests:
@@ -33,5 +57,28 @@ deploy:
   artifacts:
     paths:
       - jdk-8-target/target/*.jar
-      - jdk-11-target/target/*.jar
+      - jdk-9-target/target/*.jar
     expire_in: 30 days
+
+gradlePluginPublish:
+  stage: deploy
+  image: gradle
+  script:
+    - cd auriga-gradle-plugin
+    - gradle publish
+  artifacts:
+    paths:
+      - auriga-gradle-plugin/build/libs/*.jar
+    expire_in: 1 week
+
+kotlinPluginPublish:
+  stage: deploy
+  image: gradle
+  script:
+    - cd auriga-kotlin-plugin
+    - gradle publish
+  artifacts:
+    paths:
+      - auriga-kotlin-plugin/build/libs/*.jar
+    expire_in: 1 week
+

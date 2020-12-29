@@ -113,6 +113,12 @@ fabric.properties
 .idea/*
 *.iml
 
+# Gradle
+*/build/*
+*/.gradle/*
+gradlew
+gradlew.bat
+
 test_*
 
 ### Java template
