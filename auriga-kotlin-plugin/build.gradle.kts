@@ -37,8 +37,8 @@ publishing {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    compileOnly(kotlin("compiler-embeddable"))
+    implementation(kotlin("stdlib", version= "1.4.21"))
+    compileOnly(kotlin("compiler-embeddable", version= "1.4.21"))
 
     compileOnly("com.google.auto.service:auto-service:1.0-rc7")
     kapt("com.google.auto.service:auto-service:1.0-rc7")
