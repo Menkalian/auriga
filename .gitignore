@@ -118,6 +118,7 @@ fabric.properties
 */.gradle/*
 gradlew
 gradlew.bat
+!*/gradle/wrapper/gradle-wrapper.jar
 
 test_*
 
