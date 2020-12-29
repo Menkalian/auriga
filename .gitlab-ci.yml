@@ -19,9 +19,20 @@ mavenBuild:
       - jdk-9-target/target
     expire_in: 1 week
 
+kotlinPluginBuild:
+  stage: build-libs
+  image: gradle:6.7
+  script:
+    - cd auriga-kotlin-plugin
+    - gradle publishToMavenLocal
+  artifacts:
+    paths:
+      - auriga-kotlin-plugin/build
+    expire_in: 1 week
+
 gradlePluginBuild:
   stage: build-plugins
-  image: gradle
+  image: gradle:6.7
   dependencies:
     - kotlinPluginBuild
   script:
@@ -30,17 +41,6 @@ gradlePluginBuild:
   artifacts:
     paths:
       - auriga-gradle-plugin/build
-    expire_in: 1 week
-
-kotlinPluginBuild:
-  stage: build-libs
-  image: gradle
-  script:
-    - cd auriga-kotlin-plugin
-    - gradle publishToMavenLocal
-  artifacts:
-    paths:
-      - auriga-kotlin-plugin/build
     expire_in: 1 week
 
 unitTests:
@@ -63,7 +63,7 @@ deploy:
 
 gradlePluginPublish:
   stage: deploy
-  image: gradle
+  image: gradle:6.7
   script:
     - cd auriga-gradle-plugin
     - gradle publish
@@ -74,7 +74,7 @@ gradlePluginPublish:
 
 kotlinPluginPublish:
   stage: deploy
-  image: gradle
+  image: gradle:6.7
   script:
     - cd auriga-kotlin-plugin
     - gradle publish
