@@ -24,9 +24,7 @@ kotlinPluginBuild:
   image: gradle:6.7
   script:
     - cd auriga-kotlin-plugin
-    - gradle publishToMavenLocal
-  after_script:
-    - cat /home/gradle/.gradle/daemon/6.7.1/*
+    - gradle --stacktrace --info publishToMavenLocal
   artifacts:
     paths:
       - auriga-kotlin-plugin/build
