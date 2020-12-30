@@ -4,6 +4,12 @@ stages:
   - test
   - deploy
 
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - target
+    - auriga-kotlin-plugin/build
+
 default:
   image: maven
   tags:
@@ -23,7 +29,6 @@ kotlinPluginBuild:
   stage: build-libs
   image: gradle:6.7.1-jdk15
   script:
-    - env
     - printenv
     - cd auriga-kotlin-plugin
     - gradle --stacktrace --info build
