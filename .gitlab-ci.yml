@@ -23,12 +23,12 @@ kotlinPluginBuild:
   stage: build-libs
   image: gradle:6.7.1-jdk15
   variables:
-    GRADLE_OPTS: "-Dfile.encoding=UTF-8 -Duser.country=DE -Duser.language=de -Xmx1024 -Xms512m"
+    GRADLE_OPTS: "-Dfile.encoding=UTF-8 -Duser.country=DE -Duser.language=de -Xms512m -Xmx1024 "
   script:
     - env
     - printenv
     - cd auriga-kotlin-plugin
-    - gradle --stacktrace --info build
+    - gradle --stacktrace --debug build
   after_script:
     - cat /home/gradle/.gradle/daemon/6.7.1/*
   artifacts:
