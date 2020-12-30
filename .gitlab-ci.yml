@@ -4,12 +4,6 @@ stages:
   - test
   - deploy
 
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - target
-    - auriga-kotlin-plugin/build
-
 default:
   image: maven
   tags:
@@ -21,6 +15,7 @@ mavenBuild:
     - mvn package -DskipTests
   artifacts:
     paths:
+      - *
       - jdk-8-target/target
       - jdk-9-target/target
     expire_in: 1 week
@@ -36,7 +31,7 @@ kotlinPluginBuild:
     - cat /home/gradle/.gradle/daemon/6.7.1/*
   artifacts:
     paths:
-      - auriga-kotlin-plugin/build
+      - *
     expire_in: 1 week
 
 gradlePluginBuild:
