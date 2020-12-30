@@ -25,11 +25,10 @@ kotlinPluginBuild:
   variables:
     GRADLE_OPTS: "-Dfile.encoding=UTF-8 -Duser.country=DE -Duser.language=de"
   script:
-    - env
-    - printenv
     - cd auriga-kotlin-plugin
     - gradle --scan --stacktrace --warning-mode none build
   after_script:
+    - printenv
     - cat /home/gradle/.gradle/daemon/6.7.1/*
   artifacts:
     paths:
