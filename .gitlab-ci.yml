@@ -28,7 +28,7 @@ kotlinPluginBuild:
     - env
     - printenv
     - cd auriga-kotlin-plugin
-    - gradle --scan --stacktrace --debug build
+    - gradle --scan --stacktrace --warning-mode none build
   after_script:
     - cat /home/gradle/.gradle/daemon/6.7.1/*
   artifacts:
