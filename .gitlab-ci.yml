@@ -23,7 +23,7 @@ kotlinPluginBuild:
   stage: build-libs
   image: gradle:6.7.1-jdk15
   variables:
-    GRADLE_OPTS: "-Dfile.encoding=UTF-8 -Duser.country=DE -Duser.language=de -Xms512m -Xmx1024 "
+    GRADLE_OPTS: "-Dfile.encoding=UTF-8 -Duser.country=DE -Duser.language=de -Xmx1024m -Xms512m"
   script:
     - env
     - printenv
