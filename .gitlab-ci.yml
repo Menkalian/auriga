@@ -22,13 +22,11 @@ mavenBuild:
 
 kotlinPluginBuild:
   stage: build-libs
-  image: gradle:6.7.1-jdk15
   script:
     - printenv
     - cd auriga-kotlin-plugin
     - ls -Ralh
-    - cat */*
-    - gradle --stacktrace --info build
+    - gradlew --stacktrace --info build
   after_script:
     - cat /home/gradle/.gradle/daemon/6.7.1/*
   artifacts:
@@ -38,12 +36,11 @@ kotlinPluginBuild:
 
 gradlePluginBuild:
   stage: build-plugins
-  image: gradle:6.7
   dependencies:
     - kotlinPluginBuild
   script:
     - cd auriga-gradle-plugin
-    - gradle publishToMavenLocal
+    - gradlew publishToMavenLocal
   artifacts:
     paths:
       - auriga-gradle-plugin/build
