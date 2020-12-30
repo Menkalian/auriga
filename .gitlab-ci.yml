@@ -21,7 +21,9 @@ mavenBuild:
 
 kotlinPluginBuild:
   stage: build-libs
-  image: gradle
+  image: gradle:alpine
+  variables:
+    GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   script:
     - cd auriga-kotlin-plugin
     - gradle --stacktrace --debug publishToMavenLocal

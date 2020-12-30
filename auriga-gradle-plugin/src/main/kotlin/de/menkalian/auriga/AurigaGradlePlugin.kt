@@ -8,6 +8,9 @@ class AurigaGradlePlugin : org.gradle.api.Plugin<Project> {
             "auriga",
             AurigaGradleExtension::class.java
                                  )
+
+        // TODO: 29.12.2020
+        project.dependencies.add("implementation", "de.menkalian.auriga:annotations:1.0.0")
     }
 }
 
