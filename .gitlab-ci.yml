@@ -22,9 +22,9 @@ mavenBuild:
 kotlinPluginBuild:
   stage: build-libs
   image: gradle:alpine
-  variables:
-    GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   script:
+    - env
+    - printenv
     - cd auriga-kotlin-plugin
     - gradle --stacktrace --info build
   after_script:
@@ -69,8 +69,6 @@ gradlePluginPublish:
   stage: deploy
   image: gradle:6.7
   script:
-    - env
-    - printenv
     - cd auriga-gradle-plugin
     - gradle publish
   artifacts:
