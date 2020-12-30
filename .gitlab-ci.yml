@@ -15,7 +15,6 @@ mavenBuild:
     - mvn package -DskipTests
   artifacts:
     paths:
-      - ./
       - jdk-8-target/target
       - jdk-9-target/target
     expire_in: 1 week
@@ -23,15 +22,13 @@ mavenBuild:
 kotlinPluginBuild:
   stage: build-libs
   script:
-    - printenv
     - cd auriga-kotlin-plugin
-    - ls -Ralh
     - gradlew --stacktrace --info build
   after_script:
     - cat /home/gradle/.gradle/daemon/6.7.1/*
   artifacts:
     paths:
-      - ./
+      - auriga-kotlin-plugin/build
     expire_in: 1 week
 
 gradlePluginBuild:
