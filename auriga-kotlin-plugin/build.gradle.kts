@@ -11,11 +11,6 @@ repositories {
     mavenCentral()
 }
 
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
 publishing {
     repositories {
         maven {
