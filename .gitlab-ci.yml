@@ -26,7 +26,8 @@ kotlinPluginBuild:
     GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   script:
     - cd auriga-kotlin-plugin
-    - gradle --stacktrace --debug publishToMavenLocal
+    - gradle --stacktrace --info build
+  after_script:
     - cat /home/gradle/.gradle/daemon/6.7.1/*
   artifacts:
     paths:
