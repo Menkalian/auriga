@@ -21,7 +21,7 @@ mavenBuild:
 
 kotlinPluginBuild:
   stage: build-libs
-  image: gradle:alpine
+  image: gradle:6.7.1-jdk15
   script:
     - env
     - printenv
