@@ -21,7 +21,7 @@ mavenBuild:
 
 kotlinPluginBuild:
   stage: build-libs
-  image: gradle:6.7
+  image: menkalian/sftp_gradle
   script:
     - cd auriga-kotlin-plugin
     - gradle --stacktrace --debug publishToMavenLocal
