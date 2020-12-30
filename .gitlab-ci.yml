@@ -22,15 +22,12 @@ mavenBuild:
 kotlinPluginBuild:
   stage: build-libs
   image: openjdk:latest
-  variables:
-    GRADLE_OPTS: "-Dfile.encoding=UTF-8 -Duser.country=DE -Duser.language=de"
   script:
     - cd auriga-kotlin-plugin
     - chmod +x gradlew
-    - ./gradlew --no-daemon --scan --stacktrace --warning-mode none build
+    - ./gradlew --no-daemon build
   after_script:
     - printenv
-    - cat /home/gradle/.gradle/daemon/6.7.1/*
   artifacts:
     paths:
       - auriga-kotlin-plugin/build
