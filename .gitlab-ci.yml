@@ -21,7 +21,7 @@ mavenBuild:
 
 kotlinPluginBuild:
   stage: build-libs
-  image: openjdk:latest
+  image: openjdk:15-alpine
   script:
     - cd auriga-kotlin-plugin
     - chmod +x gradlew
