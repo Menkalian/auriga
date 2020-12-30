@@ -24,6 +24,7 @@ kotlinPluginBuild:
   script:
     - cd auriga-kotlin-plugin
     - ls -l
+    - chmod +x gradlew
     - ./gradlew --stacktrace --info build
   artifacts:
     paths:
