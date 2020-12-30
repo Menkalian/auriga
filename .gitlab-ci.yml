@@ -23,9 +23,8 @@ kotlinPluginBuild:
   stage: build-libs
   script:
     - cd auriga-kotlin-plugin
-    - gradlew --stacktrace --info build
-  after_script:
-    - cat /home/gradle/.gradle/daemon/6.7.1/*
+    - ls -l
+    - ./gradlew --stacktrace --info build
   artifacts:
     paths:
       - auriga-kotlin-plugin/build
