@@ -60,7 +60,7 @@ publishing {
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.21'
     implementation 'org.jetbrains.kotlin:kotlin-gradle-plugin-api:1.4.21'
-    implementation "de.menkalian:auriga-kotlin-plugin:$version"
+    implementation "de.menkalian.auriga:auriga-kotlin-plugin:$version"
 
     compileOnly 'com.google.auto.service:auto-service:1.0-rc7'
     kapt 'com.google.auto.service:auto-service:1.0-rc7'

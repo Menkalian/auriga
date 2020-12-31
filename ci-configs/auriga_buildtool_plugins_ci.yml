@@ -15,7 +15,7 @@ gradlePluginTest:
   stage: tools-test
   image: gradle:6.7
   script:
-    - cd auriga-kotlin-plugin
+    - cd auriga-gradle-plugin
     - gradle test
 
 gradlePluginPublish:
