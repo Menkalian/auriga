@@ -21,11 +21,12 @@ mavenBuild:
 
 kotlinPluginBuild:
   stage: build-libs
-  image: openjdk:15-alpine
+  image: gradle:6.7
   script:
     - cd auriga-kotlin-plugin
-    - chmod +x gradlew
-    - ./gradlew publishToMavenLocal
+    - gradle publishToMavenLocal
+  variables:
+    M2-HOME: /root/.m2/
   artifacts:
     paths:
       - auriga-kotlin-plugin/build
@@ -39,6 +40,8 @@ gradlePluginBuild:
   script:
     - cd auriga-gradle-plugin
     - gradle publishToMavenLocal
+  variables:
+    M2-HOME: /root/.m2/
   artifacts:
     paths:
       - auriga-gradle-plugin/build
