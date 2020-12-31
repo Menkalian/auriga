@@ -1,0 +1,32 @@
+gradlePluginBuild:
+  stage: tools-build
+  image: gradle:6.7
+  dependencies:
+    - kotlinPluginBuild
+  script:
+    - cd auriga-gradle-plugin
+    - gradle publishToMavenLocal
+  artifacts:
+    paths:
+      - auriga-gradle-plugin/build
+    expire_in: 1 week
+
+gradlePluginTest:
+  stage: tools-test
+  image: gradle:6.7
+  script:
+    - cd auriga-kotlin-plugin
+    - gradle test
+
+gradlePluginPublish:
+  stage: tools-deploy
+  image: gradle:6.7
+  script:
+    - cd auriga-gradle-plugin
+    - gradle publish
+  artifacts:
+    paths:
+      - auriga-gradle-plugin/build/libs/*.jar
+    expire_in: 1 week
+
+

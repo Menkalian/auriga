@@ -1,0 +1,27 @@
+javaBuild:
+  stage: libs-build
+  script:
+    - mvn install -DskipTests
+  artifacts:
+    paths:
+      - jdk-8-target/target
+      - jdk-9-target/target
+    expire_in: 1 week
+
+javaTest:
+  stage: libs-test
+  script:
+    - mvn test
+
+javaDeploy:
+  stage: libs-deploy
+  tags:
+    - docker
+  script: mvn deploy -DskipTests
+  only:
+    - main
+  artifacts:
+    paths:
+      - jdk-8-target/target/*.jar
+      - jdk-9-target/target/*.jar
+    expire_in: 30 days
