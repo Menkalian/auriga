@@ -19,6 +19,8 @@ kotlinPluginTest:
 kotlinPluginPublish:
   stage: libs-deploy
   image: gradle:6.7
+  only:
+    - main
   script:
     - cd auriga-kotlin-plugin
     - gradle publish

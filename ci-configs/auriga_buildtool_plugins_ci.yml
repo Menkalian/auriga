@@ -24,6 +24,8 @@ gradlePluginPublish:
   script:
     - cd auriga-gradle-plugin
     - gradle publish
+  only:
+    - main
   artifacts:
     paths:
       - auriga-gradle-plugin/build/libs/*.jar
