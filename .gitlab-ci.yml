@@ -12,7 +12,7 @@ default:
 mavenBuild:
   stage: build-libs
   script:
-    - mvn package -DskipTests
+    - mvn install -DskipTests
   artifacts:
     paths:
       - jdk-8-target/target
@@ -25,9 +25,7 @@ kotlinPluginBuild:
   script:
     - cd auriga-kotlin-plugin
     - chmod +x gradlew
-    - ./gradlew --status
-    - ./gradlew --version
-    - ./gradlew build
+    - ./gradlew publishToMavenLocal
   artifacts:
     paths:
       - auriga-kotlin-plugin/build
