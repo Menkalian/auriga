@@ -21,13 +21,12 @@ mavenBuild:
 
 kotlinPluginBuild:
   stage: build-libs
-  image: openjdk:15-alpine
+  image: openjdk:15
   script:
     - cd auriga-kotlin-plugin
     - chmod +x gradlew
     - ./gradlew --status
     - ./gradlew --version
-    - ./gradlew --stop
     - ./gradlew build
   artifacts:
     paths:
