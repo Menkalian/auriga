@@ -33,6 +33,7 @@ gradlePlugin {
 repositories {
     mavenCentral()
     jcenter()
+    mavenLocal()
     maven {
         name = 'artifactory-menkalian'
         url = "http://server.menkalian.de:8081/artifactory/auriga"
