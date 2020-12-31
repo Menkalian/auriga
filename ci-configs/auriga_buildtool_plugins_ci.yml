@@ -14,6 +14,8 @@ gradlePluginBuild:
 gradlePluginTest:
   stage: tools-test
   image: gradle:6.7
+  dependencies:
+    - gradlePluginBuild
   script:
     - cd auriga-gradle-plugin
     - gradle test
@@ -21,6 +23,8 @@ gradlePluginTest:
 gradlePluginPublish:
   stage: tools-deploy
   image: gradle:6.7
+  dependencies:
+    - gradlePluginTest
   script:
     - cd auriga-gradle-plugin
     - gradle publish

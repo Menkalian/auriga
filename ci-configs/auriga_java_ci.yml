@@ -10,6 +10,8 @@ javaBuild:
 
 javaTest:
   stage: libs-test
+  dependencies:
+    - javaBuild
   script:
     - mvn test
 
@@ -20,6 +22,8 @@ javaDeploy:
   script: mvn deploy -DskipTests
   only:
     - main
+  dependencies:
+    - javaTest
   artifacts:
     paths:
       - jdk-8-target/target/*.jar

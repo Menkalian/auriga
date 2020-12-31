@@ -12,6 +12,8 @@ kotlinPluginBuild:
 kotlinPluginTest:
   stage: libs-test
   image: gradle:6.7
+  dependencies:
+    - kotlinPluginBuild
   script:
     - cd auriga-kotlin-plugin
     - gradle test
@@ -19,6 +21,8 @@ kotlinPluginTest:
 kotlinPluginPublish:
   stage: libs-deploy
   image: gradle:6.7
+  dependencies:
+    - kotlinPluginTest
   only:
     - main
   script:
