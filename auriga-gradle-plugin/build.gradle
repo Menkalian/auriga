@@ -8,6 +8,9 @@ plugins {
 
 group = 'de.menkalian.auriga'
 version = '1.0.0'
+if (System.getenv("CI_COMMIT_BRANCH") != "main" && System.getenv("CI_COMMIT_BRANCH") != null) {
+    version = "${version}-${System.getenv("CI_COMMIT_SHORT_SHA")}"
+}
 
 java {
     withJavadocJar()
@@ -57,7 +60,7 @@ publishing {
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.21'
     implementation 'org.jetbrains.kotlin:kotlin-gradle-plugin-api:1.4.21'
-    implementation 'de.menkalian:auriga-kotlin-plugin:1.0.0'
+    implementation "de.menkalian:auriga-kotlin-plugin:$version"
 
     compileOnly 'com.google.auto.service:auto-service:1.0-rc7'
     kapt 'com.google.auto.service:auto-service:1.0-rc7'
