@@ -3,7 +3,7 @@ kotlinPluginBuild:
   image: gradle:6.7
   script:
     - cd auriga-kotlin-plugin
-    - gradle publishToMavenLocal
+    - gradle --scan publishToMavenLocal
   artifacts:
     paths:
       - auriga-kotlin-plugin/build
@@ -27,7 +27,7 @@ kotlinPluginPublish:
     - main
   script:
     - cd auriga-kotlin-plugin
-    - gradle publish
+    - gradle --scan publish
   artifacts:
     paths:
       - auriga-kotlin-plugin/build/libs/*.jar

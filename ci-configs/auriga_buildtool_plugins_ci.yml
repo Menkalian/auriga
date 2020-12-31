@@ -5,7 +5,7 @@ gradlePluginBuild:
     - kotlinPluginBuild
   script:
     - cd auriga-gradle-plugin
-    - gradle publishToMavenLocal
+    - gradle --scan publishToMavenLocal
   artifacts:
     paths:
       - auriga-gradle-plugin/build
@@ -27,7 +27,7 @@ gradlePluginPublish:
     - gradlePluginTest
   script:
     - cd auriga-gradle-plugin
-    - gradle publish
+    - gradle --scan publish
   only:
     - main
   artifacts:
