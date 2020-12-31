@@ -1,89 +1,17 @@
 stages:
-  - build-libs
-  - build-plugins
-  - test
-  - deploy
+  - libs-build
+  - libs-test
+  - libs-deploy
+  - tools-build
+  - tools-test
+  - tools-deploy
 
 default:
   image: maven
   tags:
     - docker
 
-mavenBuild:
-  stage: build-libs
-  script:
-    - mvn install -DskipTests
-  artifacts:
-    paths:
-      - jdk-8-target/target
-      - jdk-9-target/target
-    expire_in: 1 week
-
-kotlinPluginBuild:
-  stage: build-libs
-  image: gradle:6.7
-  script:
-    - cd auriga-kotlin-plugin
-    - gradle publishToMavenLocal
-  variables:
-    M2_HOME: /root/.m2/
-  artifacts:
-    paths:
-      - auriga-kotlin-plugin/build
-    expire_in: 1 week
-
-gradlePluginBuild:
-  stage: build-plugins
-  image: gradle:6.7
-  dependencies:
-    - kotlinPluginBuild
-  script:
-    - cd auriga-gradle-plugin
-    - gradle publishToMavenLocal
-  variables:
-    M2_HOME: /root/.m2/
-  artifacts:
-    paths:
-      - auriga-gradle-plugin/build
-    expire_in: 1 week
-
-unitTests:
-  stage: test
-  script:
-    - mvn test
-
-deploy:
-  stage: deploy
-  tags:
-    - docker
-  script: mvn deploy -DskipTests
-  only:
-    - master
-  artifacts:
-    paths:
-      - jdk-8-target/target/*.jar
-      - jdk-9-target/target/*.jar
-    expire_in: 30 days
-
-gradlePluginPublish:
-  stage: deploy
-  image: gradle:6.7
-  script:
-    - cd auriga-gradle-plugin
-    - gradle publish
-  artifacts:
-    paths:
-      - auriga-gradle-plugin/build/libs/*.jar
-    expire_in: 1 week
-
-kotlinPluginPublish:
-  stage: deploy
-  image: gradle:6.7
-  script:
-    - cd auriga-kotlin-plugin
-    - gradle publish
-  artifacts:
-    paths:
-      - auriga-kotlin-plugin/build/libs/*.jar
-    expire_in: 1 week
-
+include:
+  - local: ci-configs/auriga_java_ci.yml
+  - local: ci-configs/auriga_kotlin_ci.yml
+  - local: ci-configs/auriga_buildtool_plugins_ci.yml

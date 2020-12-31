@@ -4,8 +4,12 @@ plugins {
     `maven-publish`
 }
 
-group = "de.menkalian"
+group = "de.menkalian.auriga"
 version = "1.0.0"
+
+if (System.getenv("CI_COMMIT_BRANCH") != "main" && System.getenv("CI_COMMIT_BRANCH") != null) {
+    version = "${version}-${System.getenv("CI_COMMIT_SHORT_SHA")}"
+}
 
 repositories {
     mavenCentral()
@@ -31,12 +35,6 @@ publishing {
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
-    }
-}
 kapt {
     includeCompileClasspath = false
 }
