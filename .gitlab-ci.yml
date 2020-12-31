@@ -26,8 +26,6 @@ kotlinPluginBuild:
     - cd auriga-kotlin-plugin
     - chmod +x gradlew
     - ./gradlew build
-  after_script:
-    - printenv
   artifacts:
     paths:
       - auriga-kotlin-plugin/build
