@@ -26,7 +26,7 @@ kotlinPluginBuild:
     - cd auriga-kotlin-plugin
     - gradle publishToMavenLocal
   variables:
-    M2-HOME: /root/.m2/
+    M2_HOME: /root/.m2/
   artifacts:
     paths:
       - auriga-kotlin-plugin/build
@@ -41,7 +41,7 @@ gradlePluginBuild:
     - cd auriga-gradle-plugin
     - gradle publishToMavenLocal
   variables:
-    M2-HOME: /root/.m2/
+    M2_HOME: /root/.m2/
   artifacts:
     paths:
       - auriga-gradle-plugin/build
