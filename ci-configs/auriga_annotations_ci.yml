@@ -19,7 +19,7 @@ annotationPublish:
   only:
     - main
   script:
-    - cd auriga-annotation
+    - cd auriga-annotations
     - gradle publish
   artifacts:
     paths:
