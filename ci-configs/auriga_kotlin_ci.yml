@@ -1,5 +1,5 @@
 kotlinPluginBuild:
-  stage: libs-build
+  stage: processor-build
   image: gradle:6.7
   script:
     - cd auriga-kotlin-plugin
@@ -10,19 +10,15 @@ kotlinPluginBuild:
     expire_in: 1 week
 
 kotlinPluginTest:
-  stage: libs-test
+  stage: processor-test
   image: gradle:6.7
-  dependencies:
-    - kotlinPluginBuild
   script:
     - cd auriga-kotlin-plugin
     - gradle test
 
 kotlinPluginPublish:
-  stage: libs-deploy
+  stage: processor-deploy
   image: gradle:6.7
-  dependencies:
-    - kotlinPluginTest
   only:
     - main
   script:
@@ -30,5 +26,5 @@ kotlinPluginPublish:
     - gradle publish
   artifacts:
     paths:
-      - auriga-kotlin-plugin/build/libs/*.jar
-    expire_in: 1 week
+      - auriga-kotlin-plugin/build/*.jar
+    expire_in: 1 month

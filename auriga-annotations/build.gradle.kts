@@ -1,6 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.4.21"
-    kotlin("kapt") version "1.4.21"
+    java
     `maven-publish`
 }
 
@@ -9,6 +8,13 @@ version = "1.0.0"
 
 if (System.getenv("CI_COMMIT_BRANCH") != "main" && System.getenv("CI_COMMIT_BRANCH") != null) {
     version = "${version}-${System.getenv("CI_COMMIT_BRANCH")}-SNAPSHOT"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    withJavadocJar()
+    withSourcesJar()
 }
 
 repositories {
@@ -35,14 +41,4 @@ publishing {
     }
 }
 
-kapt {
-    includeCompileClasspath = false
-}
-
-dependencies {
-    implementation(kotlin("stdlib"))
-    compileOnly(kotlin("compiler-embeddable"))
-
-    compileOnly("com.google.auto.service:auto-service:1.0-rc7")
-    kapt("com.google.auto.service:auto-service:1.0-rc7")
-}
+dependencies {}
