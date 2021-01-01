@@ -1,0 +1,27 @@
+annotationBuild:
+  stage: lib-build
+  script:
+    - cd auriga-annotations
+    - gradle publishToMavenLocal
+  artifacts:
+    paths:
+      - auriga-annotations/build
+    expire_in: 1 week
+
+annotationTest:
+  stage: lib-test
+  script:
+    - cd auriga-annotations
+    - gradle test
+
+annotationPublish:
+  stage: lib-deploy
+  only:
+    - main
+  script:
+    - cd auriga-annotation
+    - gradle publish
+  artifacts:
+    paths:
+      - auriga-annotations/build/libs/*.jar
+    expire_in: 1 month

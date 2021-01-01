@@ -1,17 +1,21 @@
 stages:
-  - libs-build
-  - libs-test
-  - libs-deploy
+  - lib-build
+  - lib-test
+  - lib-deploy
+  - processor-build
+  - processor-test
+  - processor-deploy
   - tools-build
   - tools-test
   - tools-deploy
 
 default:
-  image: maven
+  image: gradle:6.7
   tags:
     - docker
 
 include:
+  - local: ci-configs/auriga_annotations_ci.yml
   - local: ci-configs/auriga_java_ci.yml
   - local: ci-configs/auriga_kotlin_ci.yml
   - local: ci-configs/auriga_buildtool_plugins_ci.yml

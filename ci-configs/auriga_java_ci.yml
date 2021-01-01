@@ -1,31 +1,27 @@
 javaBuild:
-  stage: libs-build
+  stage: processor-build
   script:
-    - mvn install -DskipTests
+    - cd auriga-java-processor
+    - gradle build
   artifacts:
     paths:
-      - jdk-8-target/target
-      - jdk-9-target/target
+      - auriga-java-processor/build
     expire_in: 1 week
 
 javaTest:
-  stage: libs-test
-  dependencies:
-    - javaBuild
+  stage: processor-test
   script:
-    - mvn test
+    - cd auriga-java-processor
+    - gradle test
 
 javaDeploy:
-  stage: libs-deploy
-  tags:
-    - docker
-  script: mvn deploy -DskipTests
+  stage: processor-deploy
+  script:
+    - cd auriga-java-processor
+    - gradle publish
   only:
     - main
-  dependencies:
-    - javaTest
   artifacts:
     paths:
-      - jdk-8-target/target/*.jar
-      - jdk-9-target/target/*.jar
-    expire_in: 30 days
+      - auriga-java-processor/build/*.jar
+    expire_in: 1 month

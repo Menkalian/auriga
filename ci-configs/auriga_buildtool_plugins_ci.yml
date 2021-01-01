@@ -1,6 +1,5 @@
 gradlePluginBuild:
   stage: tools-build
-  image: gradle:6.7
   dependencies:
     - kotlinPluginBuild
   script:
@@ -13,18 +12,12 @@ gradlePluginBuild:
 
 gradlePluginTest:
   stage: tools-test
-  image: gradle:6.7
-  dependencies:
-    - gradlePluginBuild
   script:
     - cd auriga-gradle-plugin
     - gradle test
 
 gradlePluginPublish:
   stage: tools-deploy
-  image: gradle:6.7
-  dependencies:
-    - gradlePluginTest
   script:
     - cd auriga-gradle-plugin
     - gradle publish
@@ -33,6 +26,6 @@ gradlePluginPublish:
   artifacts:
     paths:
       - auriga-gradle-plugin/build/libs/*.jar
-    expire_in: 1 week
+    expire_in: 1 month
 
 
