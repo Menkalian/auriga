@@ -11,17 +11,10 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 class AurigaGradleSubplugin : KotlinCompilerPluginSupportPlugin {
     override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
         return kotlinCompilation.target.project.provider {
-            val extension = kotlinCompilation.target.project.extensions.findByType(AurigaGradleExtension::class.java) ?: AurigaGradleExtension()
+            val extension = kotlinCompilation.target.project.extensions.findByType(AurigaGradleExtension::class.java)
 
-            if (extension.enabled && extension.annotations.isEmpty())
-                error("Auriga is enabled, but no annotations were set")
-
-            val annotationOptions = extension.annotations
-                .map { SubpluginOption(key = "aurigaAnnotation", value = it) }
-            val enabledOption = SubpluginOption(
-                key = "enabled", value = extension.enabled.toString()
-                                               )
-            annotationOptions + enabledOption
+            println(extension)
+            listOf(SubpluginOption("tmp", "tmp"))
         }
     }
 
@@ -30,7 +23,7 @@ class AurigaGradleSubplugin : KotlinCompilerPluginSupportPlugin {
 
     override fun getPluginArtifact(): SubpluginArtifact = SubpluginArtifact(
         groupId = "de.menkalian", artifactId = "auriga-kotlin-plugin", version = "1.0.0"
-                                                                           )
+    )
 
     override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean =
         kotlinCompilation.target.project.plugins.hasPlugin(AurigaGradlePlugin::class.java)

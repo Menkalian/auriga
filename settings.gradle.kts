@@ -6,3 +6,4 @@ include(
     "auriga-kotlin-plugin",
     "auriga-maven-plugin"
 )
+include("auriga-config")

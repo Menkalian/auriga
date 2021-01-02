@@ -70,4 +70,5 @@ publishing {
 
 dependencies {
     implementation("de.menkalian.auriga:auriga-annotations:$version")
+    implementation("de.menkalian.auriga:auriga-config:$version")
 }

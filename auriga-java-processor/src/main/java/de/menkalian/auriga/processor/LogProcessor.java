@@ -6,6 +6,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
@@ -36,4 +37,9 @@ public class LogProcessor extends AbstractProcessor {
             return specializedProcessor.process(annotations, roundEnv);
         }
     }
+
+//    @Override
+//    public Set<String> getSupportedOptions () {
+//        //return getOptionKeys();
+//    }
 }
