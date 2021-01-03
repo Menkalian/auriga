@@ -32,6 +32,7 @@ class AurigaConfig(val type: String = "FILE", val location: String = "auriga-con
         base = (map[Auriga.Config.base] ?: base).toString()
         loadBaseConfig()
 
+        loggingConfig.mode = (map[Auriga.Logging.mode] ?: loggingConfig.mode).toString()
         loggingConfig.method = (map[Auriga.Logging.method] ?: loggingConfig.method).toString()
         loggingConfig.placeholder = (map[Auriga.Logging.placeholder] ?: loggingConfig.placeholder).toString()
         loggingConfig.entryTemplate = (map[Auriga.Logging.Template.entry] ?: loggingConfig.entryTemplate).toString()
@@ -57,6 +58,7 @@ class AurigaConfig(val type: String = "FILE", val location: String = "auriga-con
 }
 
 class AurigaLoggingConfig {
+    var mode : String = "DEFAULT_OFF"
     var method: String = "System.out.printf"
     var placeholder = "PRINTF"
     var entryTemplate = "Executing {{METHOD}} with Params: {\n{{PARAMS}}\n}\n"

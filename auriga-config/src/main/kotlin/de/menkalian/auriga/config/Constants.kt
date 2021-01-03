@@ -46,11 +46,13 @@ object Auriga {
     object Logging {
         private const val BASE = "${Auriga.BASE}.logging"
 
+        const val mode = "$BASE.mode"
         const val method = "$BASE.method"
         const val placeholder = "$BASE.placeholder"
 
         fun getKeys(): Set<String> {
             val toReturn = mutableSetOf<String>()
+            toReturn.add(mode)
             toReturn.add(method)
             toReturn.add(placeholder)
             toReturn.addAll(Template.getKeys())
