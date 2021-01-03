@@ -1,8 +1,8 @@
 rootProject.name = "auriga"
 include(
     "auriga-annotations",
-    "auriga-gradle-plugin",
+    "auriga-config",
     "auriga-java-processor",
     "auriga-kotlin-plugin",
-    "auriga-maven-plugin"
+    "auriga-gradle-plugin"
 )

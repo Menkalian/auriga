@@ -1,6 +1,7 @@
 package de.menkalian.auriga.processor;
 
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
+import de.menkalian.auriga.config.UtilKt;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -35,5 +36,10 @@ public class LogProcessor extends AbstractProcessor {
         } else {
             return specializedProcessor.process(annotations, roundEnv);
         }
+    }
+
+    @Override
+    public Set<String> getSupportedOptions () {
+        return UtilKt.getSupportedConfigKeys();
     }
 }

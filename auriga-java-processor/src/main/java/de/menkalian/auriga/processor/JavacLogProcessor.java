@@ -7,12 +7,12 @@ import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Name;
-import de.menkalian.auriga.Config;
 import de.menkalian.auriga.annotations.Log;
 import de.menkalian.auriga.annotations.NoLog;
-import de.menkalian.auriga.config.Constants;
+import de.menkalian.auriga.config.AurigaConfig;
+import de.menkalian.auriga.config.AurigaLoggingConfig;
 import de.menkalian.auriga.config.FormatPlaceholder;
-import de.menkalian.auriga.config.LoggerConfig;
+import de.menkalian.auriga.config.Placeholder;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -22,13 +22,15 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 public class JavacLogProcessor extends AbstractProcessor {
     JavacProcessingEnvironment processingEnvironment;
     TreeMaker instance;
     JavacElements elementUtils;
-    Config config;
+    AurigaConfig config;
     private Set<? extends Element> excludedElements;
 
     @Override
@@ -77,11 +79,8 @@ public class JavacLogProcessor extends AbstractProcessor {
         instance = TreeMaker.instance(processingEnvironment.getContext());
 
         // Load config
-        if (processingEnvironment.getOptions().containsKey("Auriga.Config.File")) {
-            config = new Config(processingEnvironment.getOptions().get("Auriga.Config.File"));
-        } else {
-            config = new Config();
-        }
+        Map<String, String> options = processingEnvironment.getOptions();
+        config = new AurigaConfig(Collections.unmodifiableMap(options));
     }
 
     private void generateHeaderLogsForMethod (Element method) {
@@ -94,10 +93,11 @@ public class JavacLogProcessor extends AbstractProcessor {
         final List<JCTree.JCStatement> stats = tree.body.stats;
 
         JCTree.JCMethodInvocation logInvocation;
-        if (config.getSelectedFormatPlaceholder() == FormatPlaceholder.NONE) {
-            logInvocation = instance.Apply(null, convertStringToJC(config.getLoggingMethod()), List.of(instance.Apply(null, convertStringToJC("String.format"), generateArgumentsFromMethod(method))));
+        AurigaLoggingConfig loggingConfig = config.getLoggingConfig();
+        if (loggingConfig.getPlaceholderEnum() == FormatPlaceholder.NONE) {
+            logInvocation = instance.Apply(null, convertStringToJC(loggingConfig.getMethod()), List.of(instance.Apply(null, convertStringToJC("String.format"), generateArgumentsFromMethod(method))));
         } else {
-            logInvocation = instance.Apply(null, convertStringToJC(config.getLoggingMethod()), generateArgumentsFromMethod(method));
+            logInvocation = instance.Apply(null, convertStringToJC(loggingConfig.getMethod()), generateArgumentsFromMethod(method));
         }
         if (stats.get(0).toString().startsWith("super")) {
             List<JCTree.JCStatement> newStats = List.of(stats.get(0)).append(instance.Exec(logInvocation));
@@ -115,7 +115,7 @@ public class JavacLogProcessor extends AbstractProcessor {
     }
 
     private void checkLogger (Element enclosingElement) {
-        if (config.getSelectedLoggerConfig() == LoggerConfig.NONE)
+        if (config.getLoggerConfig().getType().equals("NONE"))
             return;
 
         if (enclosingElement.getEnclosingElement().getKind() != ElementKind.PACKAGE)
@@ -131,17 +131,21 @@ public class JavacLogProcessor extends AbstractProcessor {
             JCTree.JCVariableDecl logDefTree = instance.VarDef(
                     instance.Modifiers(Flags.PRIVATE | Flags.STATIC | Flags.FINAL),
                     elementUtils.getName("log"),
-                    convertStringToJC(config.getSelectedLoggerConfig().getClazz()),
+                    convertStringToJC(config.getLoggerConfig().getClazz()),
                     generateLoggerInit(enclosingElement));
             classDeclTree.defs = classDeclTree.defs.prepend(logDefTree);
         }
     }
 
     private JCTree.JCExpression generateLoggerInit (Element classElement) {
-        String[] provisioningData = config.getSelectedLoggerConfig().getProvisioning().split("\\(");
+        String[] provisioningData = config.getLoggerConfig().getSource().split("\\(");
         String provisioningMethod = provisioningData[0];
-        String provisioningArgument = provisioningData[1].split("\\)")[0].replace(Constants.PLACEHOLDER_CLASS, classElement.getSimpleName());
-        return instance.Apply(null, convertStringToJC(provisioningMethod), List.of(convertStringToJC(provisioningArgument)));
+        String provisioningArgument = provisioningData[1].split("\\)")[0].replace(Placeholder.CLASS, classElement.getSimpleName());
+        if (provisioningArgument.startsWith("\"")) {
+            return instance.Apply(null, convertStringToJC(provisioningMethod), List.of(convertStringToJC(provisioningArgument)));
+        } else {
+            return instance.Apply(null, convertStringToJC(provisioningMethod), List.of(instance.Literal(provisioningArgument.substring(1, provisioningArgument.length() - 1))));
+        }
     }
 
     private JCTree.JCExpression convertStringToJC (String ref) {
@@ -160,21 +164,21 @@ public class JavacLogProcessor extends AbstractProcessor {
 
     private List<JCTree.JCExpression> generateArgumentsFromMethod (Element method) {
         final JCTree.JCMethodDecl tree = (JCTree.JCMethodDecl) elementUtils.getTree(method);
-        final String placeholder = config.getSelectedFormatType().getPlaceholder();
+        final String placeholder = config.getLoggingConfig().getPlaceholderEnum().getPlaceholder();
         final Element clazz = method.getEnclosingElement();
 
-        String stringToPrint = config.getMethodTemplate();
+        String stringToPrint = config.getLoggingConfig().getEntryTemplate();
         List<JCTree.JCExpression> parametersForFormatter = List.nil();
 
-        while (stringToPrint.contains(Constants.PLACEHOLDER_THIS) || stringToPrint.contains(Constants.PLACEHOLDER_PARAMS)) {
-            int indexOfThis = stringToPrint.indexOf(Constants.PLACEHOLDER_THIS);
-            int indexOfParams = stringToPrint.indexOf(Constants.PLACEHOLDER_PARAMS);
+        while (stringToPrint.contains(Placeholder.THIS) || stringToPrint.contains(Placeholder.PARAMS)) {
+            int indexOfThis = stringToPrint.indexOf(Placeholder.THIS);
+            int indexOfParams = stringToPrint.indexOf(Placeholder.PARAMS);
             if (indexOfParams == -1 || (indexOfThis < indexOfParams && indexOfThis != -1)) {
                 // Append a "this" as String (= Call toString)
                 if (method.getModifiers().contains(Modifier.STATIC)) {
-                    stringToPrint = stringToPrint.replace(Constants.PLACEHOLDER_THIS, clazz.getSimpleName() + ".class");
+                    stringToPrint = stringToPrint.replace(Placeholder.THIS, clazz.getSimpleName() + ".class");
                 } else {
-                    stringToPrint = stringToPrint.replace(Constants.PLACEHOLDER_THIS, "%s");
+                    stringToPrint = stringToPrint.replace(Placeholder.THIS, "%s");
                     parametersForFormatter = parametersForFormatter.append(instance.Apply(null, convertStringToJC("toString"), List.nil()));
                 }
             } else {
@@ -184,29 +188,29 @@ public class JavacLogProcessor extends AbstractProcessor {
                 for (JCTree.JCVariableDecl parameter : tree.getParameters()) {
                     // Concatenation seem more reasonable here since StringBuilder does not support replacing CharSequences
                     //noinspection StringConcatenationInLoop
-                    replacement += config.getParamTemplate();
+                    replacement += config.getLoggingConfig().getParamTemplate();
 
-                    while (replacement.contains(Constants.PLACEHOLDER_PARAM_TYPE))
-                        replacement = replacement.replace(Constants.PLACEHOLDER_PARAM_TYPE, parameter.vartype.toString());
+                    while (replacement.contains(Placeholder.PARAM_TYPE))
+                        replacement = replacement.replace(Placeholder.PARAM_TYPE, parameter.vartype.toString());
 
-                    while (replacement.contains(Constants.PLACEHOLDER_PARAM_NAME))
-                        replacement = replacement.replace(Constants.PLACEHOLDER_PARAM_NAME, parameter.name.toString());
+                    while (replacement.contains(Placeholder.PARAM_NAME))
+                        replacement = replacement.replace(Placeholder.PARAM_NAME, parameter.name.toString());
 
-                    while (replacement.contains(Constants.PLACEHOLDER_PARAM_VALUE)) {
-                        replacement = replacement.replace(Constants.PLACEHOLDER_PARAM_VALUE, placeholder);
+                    while (replacement.contains(Placeholder.PARAM_VALUE)) {
+                        replacement = replacement.replace(Placeholder.PARAM_VALUE, placeholder);
                         parametersForFormatter = parametersForFormatter.append(getArgumentForParameter(parameter));
                     }
                 }
 
-                stringToPrint = stringToPrint.replace(Constants.PLACEHOLDER_PARAMS, replacement);
+                stringToPrint = stringToPrint.replace(Placeholder.PARAMS, replacement);
             }
         }
 
-        while (stringToPrint.contains(Constants.PLACEHOLDER_CLASS))
-            stringToPrint = stringToPrint.replace(Constants.PLACEHOLDER_CLASS, clazz.getSimpleName());
+        while (stringToPrint.contains(Placeholder.CLASS))
+            stringToPrint = stringToPrint.replace(Placeholder.CLASS, clazz.getSimpleName());
 
-        while (stringToPrint.contains(Constants.PLACEHOLDER_METHOD))
-            stringToPrint = stringToPrint.replace(Constants.PLACEHOLDER_METHOD, method.getSimpleName());
+        while (stringToPrint.contains(Placeholder.METHOD))
+            stringToPrint = stringToPrint.replace(Placeholder.METHOD, method.getSimpleName());
 
         return parametersForFormatter.prepend(instance.Literal(stringToPrint));
     }

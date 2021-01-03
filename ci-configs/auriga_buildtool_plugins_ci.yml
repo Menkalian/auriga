@@ -28,7 +28,38 @@ gradlePluginPublish:
     - main
   artifacts:
     paths:
-      - auriga-gradle-plugin/build/libs/*.jar
+      - auriga-gradle-plugin/build/*.jar
     expire_in: 1 month
 
+mavenPluginBuild:
+  stage: tools-build
+  image: maven
+  dependencies:
+    - kotlinPluginBuild
+  script:
+    - cd auriga-maven-plugin
+    - mvn install -DskipTests
+  artifacts:
+    paths:
+      - auriga-maven-plugin/target
+    expire_in: 1 week
 
+mavenPluginTest:
+  stage: tools-test
+  image: maven
+  script:
+    - cd auriga-maven-plugin
+    - mvn test
+
+mavenPluginPublish:
+  stage: tools-deploy
+  image: maven
+  script:
+    - cd auriga-maven-plugin
+    - mvn deploy -DskipTests
+  only:
+    - main
+  artifacts:
+    paths:
+      - auriga-maven-plugin/target/*.jar
+    expire_in: 1 month
