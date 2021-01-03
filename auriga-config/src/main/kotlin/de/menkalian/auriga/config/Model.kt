@@ -1,13 +1,16 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package de.menkalian.auriga.config
 
 import java.io.File
 import java.util.Properties
 
-class AurigaConfig(val type: String = "FILE", val location: String = "auriga-config.xml") {
+open class AurigaConfig(val type: String = "FILE", val location: String = "auriga-config.xml", map: Map<Any, Any> = emptyMap()) {
 
-    constructor(properties: Properties) : this(
-        properties.getProperty(Auriga.Config.type, "FILE"),
-        properties.getProperty(Auriga.Config.location, "auriga-config.xml")
+    constructor(map: Map<Any, Any>) : this(
+        map.getOrDefault(Auriga.Config.type, "FILE").toString(),
+        map.getOrDefault(Auriga.Config.location, "auriga-config.xml").toString(),
+        map
     )
 
     var base = "PRINT"
@@ -25,10 +28,12 @@ class AurigaConfig(val type: String = "FILE", val location: String = "auriga-con
                 props.load(f.inputStream())
             }
             loadConfigFromMap(props)
+        } else if(type=="ARGS"){
+            loadConfigFromMap(map)
         }
     }
 
-    fun loadConfigFromMap(map: Map<Any, Any>) {
+    private fun loadConfigFromMap(map: Map<Any, Any>) {
         base = (map[Auriga.Config.base] ?: base).toString()
         loadBaseConfig()
 
@@ -57,7 +62,7 @@ class AurigaConfig(val type: String = "FILE", val location: String = "auriga-con
     }
 }
 
-class AurigaLoggingConfig {
+open class AurigaLoggingConfig {
     var mode : String = "DEFAULT_OFF"
     var method: String = "System.out.printf"
     var placeholder = "PRINTF"
@@ -69,7 +74,7 @@ class AurigaLoggingConfig {
     }
 }
 
-class AurigaLoggerConfig {
+open class AurigaLoggerConfig {
     var type = "NONE"
     var clazz = "org.slf4j.Logger"
     var source = "org.slf4j.LoggerFactory.getLogger({{CLASS}}.class)"

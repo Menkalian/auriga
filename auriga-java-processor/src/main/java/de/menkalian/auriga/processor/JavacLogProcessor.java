@@ -9,7 +9,6 @@ import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Name;
 import de.menkalian.auriga.annotations.Log;
 import de.menkalian.auriga.annotations.NoLog;
-import de.menkalian.auriga.config.Auriga;
 import de.menkalian.auriga.config.AurigaConfig;
 import de.menkalian.auriga.config.AurigaLoggingConfig;
 import de.menkalian.auriga.config.FormatPlaceholder;
@@ -81,8 +80,7 @@ public class JavacLogProcessor extends AbstractProcessor {
 
         // Load config
         Map<String, String> options = processingEnvironment.getOptions();
-        config = new AurigaConfig(options.get(Auriga.Config.type), options.get(Auriga.Config.location));
-        config.loadConfigFromMap(Collections.unmodifiableMap(options));
+        config = new AurigaConfig(Collections.unmodifiableMap(options));
     }
 
     private void generateHeaderLogsForMethod (Element method) {
