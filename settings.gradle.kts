@@ -3,7 +3,6 @@ include(
     "auriga-annotations",
     "auriga-gradle-plugin",
     "auriga-java-processor",
-    "auriga-kotlin-plugin",
-    "auriga-maven-plugin"
+    "auriga-kotlin-plugin"
 )
 include("auriga-config")
