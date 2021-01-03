@@ -1,5 +1,8 @@
 package de.menkalian.auriga
 
+import de.menkalian.auriga.config.Auriga
+import de.menkalian.auriga.config.AurigaLoggerConfig
+import de.menkalian.auriga.config.AurigaLoggingConfig
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
@@ -34,52 +37,38 @@ class AurigaGradlePlugin : org.gradle.api.Plugin<Project> {
             project.dependencies.add("annotationProcessor", "de.menkalian.auriga:auriga-java-processor:1.0.0")
 
             val gradleExtension = project.extensions.getByType(AurigaGradleExtension::class.java)
-            addJavacOption(project, "auriga.base", gradleExtension.base.name)
+
+            addJavacOption(project, Auriga.Config.base, gradleExtension.base)
+            addJavacOption(project, Auriga.Config.location, gradleExtension.location)
+            addJavacOption(project, Auriga.Config.type, gradleExtension.type)
+
+            addJavacOption(project, Auriga.Logging.method, gradleExtension.logging.method)
+            addJavacOption(project, Auriga.Logging.mode, gradleExtension.logging.mode)
+            addJavacOption(project, Auriga.Logging.placeholder, gradleExtension.logging.placeholder)
+            addJavacOption(project, Auriga.Logging.Template.entry, gradleExtension.logging.entryTemplate)
+            addJavacOption(project, Auriga.Logging.Template.param, gradleExtension.logging.paramTemplate)
+            addJavacOption(project, Auriga.Logger.type, gradleExtension.logger.type)
+            addJavacOption(project, Auriga.Logger.clazz, gradleExtension.logger.clazz)
+            addJavacOption(project, Auriga.Logger.source, gradleExtension.logger.source)
         }
     }
 
     private fun addJavacOption(project: Project, key: String, value: String) {
         project.tasks.withType(JavaCompile::class.java).all {
-            it.options.compilerArgs.add("-A$key=$value")
+            if(value.isNotBlank()){
+                project.logger.lifecycle("Adding $key -> $value")
+                it.options.compilerArgs.add("-A$key=$value")
+            }
         }
     }
 }
 
 
-open class AurigaGradleExtension @Inject constructor(val objectFactory: ObjectFactory) {
-    var base: AurigaBaseType = AurigaBaseType.PRINT
-    var config: NamedDomainObjectContainer<AurigaGradleConfigExtension> = objectFactory.domainObjectContainer(AurigaGradleConfigExtension::class.java)
-    var log: NamedDomainObjectContainer<AurigaGradleLogExtension> = objectFactory.domainObjectContainer(AurigaGradleLogExtension::class.java)
-}
+open class AurigaGradleExtension @Inject constructor(objectFactory: ObjectFactory) {
+    open var base: String = ""
+    open var type: String = "ARGS"
+    open var location: String = ""
 
-open class AurigaGradleConfigExtension {
-    var type: AurigaConfigType = AurigaConfigType.ARGS
-    var location: String = ""
-}
-
-open class AurigaGradleLogExtension @Inject constructor(val objectFactory: ObjectFactory){
-    var placeholder: AurigaLogPlaceholderType = AurigaLogPlaceholderType.NONE
-    var method: String = ""
-    var logger = objectFactory.domainObjectContainer(AurigaLoggerType::class.java)
-    var callTemplate: String = ""
-    var paramTemplate: String = ""
-}
-
-open class AurigaLoggerType(var clazz: String, var provisioning: String, var type: String = "CUSTOM") {
-    companion object {
-        val NONE = AurigaLoggerType("", "", "NONE")
-        val SLF4J = AurigaLoggerType("", "", "SLF4J")
-    }
-}
-
-enum class AurigaLogPlaceholderType {
-    PRINTF, SLF4J, NONE
-}
-
-enum class AurigaConfigType {
-    FILE, ARGS
-}
-
-enum class AurigaBaseType {
-    PRINT, SLF4J
+    open var logging: AurigaLoggingConfig = objectFactory.newInstance(AurigaLoggingConfig::class.java)
+    open var logger: AurigaLoggerConfig = objectFactory.newInstance(AurigaLoggerConfig::class.java)
 }

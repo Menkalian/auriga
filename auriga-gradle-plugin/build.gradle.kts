@@ -62,6 +62,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("gradle-plugin-api"))
     implementation("de.menkalian.auriga:auriga-kotlin-plugin:$version")
+    implementation("de.menkalian.auriga:auriga-config:$version")
 
     compileOnly("com.google.auto.service:auto-service:1.0-rc7")
     kapt("com.google.auto.service:auto-service:1.0-rc7")
