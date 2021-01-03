@@ -3,7 +3,10 @@
 *.iml
 
 # Gradle
+build/*
 */build/*
+target/*
+*/target/*
 .gradle/*
 gradle-wrapper.jar
 gradle-wrapper.properties

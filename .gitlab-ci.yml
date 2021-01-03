@@ -15,7 +15,7 @@ default:
     - docker
 
 include:
-  - local: ci-configs/auriga_annotations_ci.yml
+  - local: ci-configs/auriga_libs_ci.yml
   - local: ci-configs/auriga_java_ci.yml
   - local: ci-configs/auriga_kotlin_ci.yml
   - local: ci-configs/auriga_buildtool_plugins_ci.yml
