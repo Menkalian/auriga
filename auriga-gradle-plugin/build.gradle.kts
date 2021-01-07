@@ -60,6 +60,7 @@ publishing {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
     implementation(kotlin("gradle-plugin-api"))
     implementation("de.menkalian.auriga:auriga-kotlin-plugin:$version")
     implementation("de.menkalian.auriga:auriga-config:$version")
