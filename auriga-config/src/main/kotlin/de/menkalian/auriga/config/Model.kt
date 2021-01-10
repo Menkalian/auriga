@@ -53,7 +53,7 @@ open class AurigaConfig(val type: String = "FILE", val location: String = "aurig
             "PRINT" -> {/* loaded by default */
             }
             "SLF4J" -> {
-                loggingConfig.placeholder = "log.debug"
+                loggingConfig.method = "log.debug"
                 loggingConfig.placeholder = "SLF4J"
                 loggerConfig.type = "SLF4J"
             }
