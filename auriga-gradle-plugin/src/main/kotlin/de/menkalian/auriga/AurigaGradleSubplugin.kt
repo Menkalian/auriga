@@ -15,7 +15,7 @@ class AurigaGradleSubplugin : KotlinCompilerPluginSupportPlugin {
             val logger = kotlinCompilation.target.project.logger
             logger.info("Applying auriga kotlin plugin")
             logger.debug("auriga-kotlin-plugin options:")
-            optionsList.forEach { logger.debug("${it.key} => ${it.value}")}
+            optionsList.forEach { logger.debug("${it.key} => ${it.value}") }
             optionsList
         }
     }

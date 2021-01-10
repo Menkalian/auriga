@@ -12,13 +12,13 @@ class AurigaClassGenerationInterceptor(val aurigaAnnotations: List<String>) : Cl
         interceptedFactory: ClassBuilderFactory,
         bindingContext: BindingContext,
         diagnostics: DiagnosticSink
-                                             ): ClassBuilderFactory =
+    ): ClassBuilderFactory =
         object : ClassBuilderFactory by interceptedFactory {
             override fun newClassBuilder(origin: JvmDeclarationOrigin): ClassBuilder {
                 return AurigaClassBuilder(
                     aurigaAnnotations,
                     interceptedFactory.newClassBuilder(origin)
-                                         )
+                )
             }
         }
 

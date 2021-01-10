@@ -10,8 +10,8 @@ if (System.getenv("CI_COMMIT_BRANCH") != "main" && System.getenv("CI_COMMIT_BRAN
     version = "${version}-${System.getenv("CI_COMMIT_BRANCH")}-SNAPSHOT"
 }
 
-java.sourceCompatibility=JavaVersion.VERSION_1_8
-java.targetCompatibility=JavaVersion.VERSION_1_8
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()

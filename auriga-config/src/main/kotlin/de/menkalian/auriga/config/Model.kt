@@ -28,7 +28,7 @@ open class AurigaConfig(val type: String = "FILE", val location: String = "aurig
                 props.load(f.inputStream())
             }
             loadConfigFromMap(props)
-        } else if(type=="ARGS"){
+        } else if (type == "ARGS") {
             loadConfigFromMap(map)
         }
     }
@@ -63,13 +63,13 @@ open class AurigaConfig(val type: String = "FILE", val location: String = "aurig
 }
 
 open class AurigaLoggingConfig {
-    var mode : String = "DEFAULT_OFF"
+    var mode: String = "DEFAULT_OFF"
     var method: String = "System.out.printf"
     var placeholder = "PRINTF"
     var entryTemplate = "Executing {{METHOD}} with Params: {\n{{PARAMS}}\n}\n"
     var paramTemplate = "    {{PARAM_NAME}} : {{PARAM_TYPE}} = {{PARAM_VALUE}}"
 
-    fun getPlaceholderEnum() : FormatPlaceholder {
+    fun getPlaceholderEnum(): FormatPlaceholder {
         return FormatPlaceholder.valueOf(placeholder)
     }
 }
