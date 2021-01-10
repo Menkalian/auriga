@@ -129,7 +129,7 @@ public class JavacLogProcessor extends AbstractProcessor {
                                            .anyMatch(tree -> tree.name.contentEquals("log"));
         if (!hasLog) {
             JCTree.JCVariableDecl logDefTree = instance.VarDef(
-                    instance.Modifiers(Flags.PRIVATE | Flags.STATIC | Flags.FINAL),
+                    instance.Modifiers(Flags.STATIC | Flags.FINAL),
                     elementUtils.getName("log"),
                     convertStringToJC(config.getLoggerConfig().getClazz()),
                     generateLoggerInit(enclosingElement));
