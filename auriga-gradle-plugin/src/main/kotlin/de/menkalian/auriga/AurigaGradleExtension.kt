@@ -6,7 +6,8 @@ import de.menkalian.auriga.config.AurigaLoggingConfig
 import groovy.lang.Closure
 import org.gradle.api.Project
 
-open class AurigaGradleExtension constructor(val project: Project) {
+@Suppress("MemberVisibilityCanBePrivate") // Gradle extension should be public
+open class AurigaGradleExtension constructor(private val project: Project) {
     var base: String = ""
     var type: String = "ARGS"
     var location: String = ""

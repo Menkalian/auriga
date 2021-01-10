@@ -22,15 +22,14 @@ class AurigaComponentRegistrar : ComponentRegistrar {
         )
     }
 
+    @Suppress("NO_REFLECTION_IN_CLASS_PATH") // Probably bug (reflect is in classpath)
     private fun getMapFromCompilerConfig(configuration: CompilerConfiguration): Map<Any, Any> {
         val toReturn = mutableMapOf<Any, Any>()
 
         Auriga.getKeys().forEach { key ->
-            val configKey = AurigaConfigurationKeys::class.members.filter {
-                it.name.equals(
-                    "KEY_" + key.substring("auriga.".length).toUpperCase().replace('.', '_')
-                )
-            }.first().call(AurigaConfigurationKeys) as? CompilerConfigurationKey<*> ?: return@forEach
+            val configKey = AurigaConfigurationKeys::class.members.first {
+                it.name == "KEY_" + key.substring("auriga.".length).toUpperCase().replace('.', '_')
+            }.call(AurigaConfigurationKeys) as? CompilerConfigurationKey<*> ?: return@forEach
 
             val value = configuration.get(configKey)
             if (value != null)

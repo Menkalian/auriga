@@ -27,7 +27,7 @@
 
     <repositories>
         <repository>
-            <id>aritfactoryMenkalian</id>
+            <id>artifactoryMenkalian</id>
             <name>artifactoryMenkalian</name>
             <url>http://server.menkalian.de:8081/artifactory/auriga</url>
         </repository>
