@@ -2,7 +2,6 @@
 
 package de.menkalian.auriga
 
-import de.menkalian.auriga.config.Auriga
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.tasks.compile.JavaCompile
@@ -16,13 +15,23 @@ class AurigaGradlePlugin : org.gradle.api.Plugin<Project> {
     private lateinit var extension: AurigaGradleExtension
 
     override fun apply(project: Project) {
-        extension = project.extensions.create(EXTENSION_NAME, AurigaGradleExtension::class.java, project)
-        project.afterEvaluate {
-            println(extension)
+        // Add the repository if needed
+        if (project.repositories.any {
+                if (it is MavenArtifactRepository) {
+                    it.url.toString() == "http://server.menkalian.de:8081/artifactory/auriga"
+                } else false
+            }) {
+            project.repositories.maven {
+                it.name = "artifactory-auriga-menkalian"
+                it.url = URI("http://server.menkalian.de:8081/artifactory/auriga")
+            }
         }
+
+        extension = project.extensions.create(EXTENSION_NAME, AurigaGradleExtension::class.java, project)
 
         project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
             applyBaseIfNotAlreadyApplied(project)
+            project.pluginManager.apply(AurigaGradleSubplugin::class.java)
         }
 
         // Check if java is present
@@ -53,18 +62,6 @@ class AurigaGradlePlugin : org.gradle.api.Plugin<Project> {
         if (!baseApplied.getAndSet(true)) {
             // Add the Annotations dependency
             project.dependencies.add("implementation", "de.menkalian.auriga:auriga-annotations:1.0.0")
-
-            // Add the repository if needed
-            if (project.repositories.any {
-                    if (it is MavenArtifactRepository) {
-                        it.url.toString() == "http://server.menkalian.de:8081/artifactory/auriga"
-                    } else false
-                }) {
-                project.repositories.maven {
-                    it.name = "artifactory-auriga-menkalian"
-                    it.url = URI("http://server.menkalian.de:8081/artifactory/auriga")
-                }
-            }
         }
     }
 
