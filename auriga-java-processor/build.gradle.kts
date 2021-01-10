@@ -35,17 +35,11 @@ tasks.withType(JavaCompile::class) {
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven {
         url = uri("http://server.menkalian.de:8081/artifactory/auriga")
         name = "artifactory-menkalian"
-        authentication {
-            credentials {
-                username = System.getenv("MAVEN_REPO_USER")
-                password = System.getenv("MAVEN_REPO_PASS")
-            }
-        }
     }
-    mavenLocal()
 }
 
 publishing {

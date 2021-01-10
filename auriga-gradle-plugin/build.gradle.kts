@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.4.21"
-    kotlin("kapt") version "1.4.21"
+    kotlin("jvm")
+    kotlin("kapt")
     `java-gradle-plugin`
     id("com.gradle.plugin-publish") version "0.12.0"
     `maven-publish`
@@ -60,6 +60,7 @@ publishing {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
     implementation(kotlin("gradle-plugin-api"))
     implementation("de.menkalian.auriga:auriga-kotlin-plugin:$version")
     implementation("de.menkalian.auriga:auriga-config:$version")
