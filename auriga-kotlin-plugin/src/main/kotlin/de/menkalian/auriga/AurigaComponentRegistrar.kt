@@ -17,7 +17,7 @@ class AurigaComponentRegistrar : ComponentRegistrar {
         org.jetbrains.kotlin.konan.file.createTempFile("AURIGA").writeText(config.toString())
         ClassBuilderInterceptorExtension.registerExtension(
             project, AurigaClassGenerationInterceptor(
-                listOf()
+                config
             )
         )
     }
