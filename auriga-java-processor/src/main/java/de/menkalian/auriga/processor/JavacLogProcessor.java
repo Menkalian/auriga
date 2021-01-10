@@ -142,9 +142,9 @@ public class JavacLogProcessor extends AbstractProcessor {
         String provisioningMethod = provisioningData[0];
         String provisioningArgument = provisioningData[1].split("\\)")[0].replace(Placeholder.CLASS, classElement.getSimpleName());
         if (provisioningArgument.startsWith("\"")) {
-            return instance.Apply(null, convertStringToJC(provisioningMethod), List.of(convertStringToJC(provisioningArgument)));
-        } else {
             return instance.Apply(null, convertStringToJC(provisioningMethod), List.of(instance.Literal(provisioningArgument.substring(1, provisioningArgument.length() - 1))));
+        } else {
+            return instance.Apply(null, convertStringToJC(provisioningMethod), List.of(convertStringToJC(provisioningArgument)));
         }
     }
 
