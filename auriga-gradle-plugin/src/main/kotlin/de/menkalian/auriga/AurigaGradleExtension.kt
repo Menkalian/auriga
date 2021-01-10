@@ -1,5 +1,6 @@
 package de.menkalian.auriga
 
+import de.menkalian.auriga.config.Auriga
 import de.menkalian.auriga.config.AurigaLoggerConfig
 import de.menkalian.auriga.config.AurigaLoggingConfig
 import groovy.lang.Closure
@@ -24,6 +25,23 @@ open class AurigaGradleExtension constructor(val project: Project) {
 
     open fun loggerConfig(config: AurigaLogger.() -> Unit) =
         loggerConfig.config()
+
+    internal fun getOptionsWithKey() =
+        mutableMapOf(
+            Pair(Auriga.Config.base, base),
+            Pair(Auriga.Config.location, location),
+            Pair(Auriga.Config.type, type),
+
+            Pair(Auriga.Logging.method, loggingConfig.method),
+            Pair(Auriga.Logging.mode, loggingConfig.mode),
+            Pair(Auriga.Logging.placeholder, loggingConfig.placeholder),
+            Pair(Auriga.Logging.Template.entry, loggingConfig.entryTemplate),
+            Pair(Auriga.Logging.Template.param, loggingConfig.paramTemplate),
+
+            Pair(Auriga.Logger.type, loggerConfig.type),
+            Pair(Auriga.Logger.clazz, loggerConfig.clazz),
+            Pair(Auriga.Logger.source, loggerConfig.source)
+        ).filter { it.value.isNotBlank() }
 }
 
 open class AurigaLogging : AurigaLoggingConfig() {

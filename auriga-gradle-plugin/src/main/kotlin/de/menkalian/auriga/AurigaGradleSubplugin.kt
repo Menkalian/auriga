@@ -11,10 +11,13 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 class AurigaGradleSubplugin : KotlinCompilerPluginSupportPlugin {
     override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
         return kotlinCompilation.target.project.provider {
-            val extension = kotlinCompilation.target.project.extensions.findByType(AurigaGradleExtension::class.java)
-
-            println(extension)
-            listOf(SubpluginOption("tmp", "tmp"))
+            val extension = kotlinCompilation.target.project.auriga()
+            val optionsList = extension.getOptionsWithKey().map { SubpluginOption(it.key, it.value) }
+            val logger = kotlinCompilation.target.project.logger
+            logger.info("Applying auriga kotlin plugin")
+            logger.debug("auriga-kotlin-plugin options:")
+            optionsList.forEach { logger.debug("${it.key} => ${it.value}")}
+            optionsList
         }
     }
 
