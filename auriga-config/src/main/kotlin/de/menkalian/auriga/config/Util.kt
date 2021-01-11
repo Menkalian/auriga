@@ -1,7 +1,5 @@
 package de.menkalian.auriga.config
 
-import java.lang.reflect.Field
-
 enum class FormatPlaceholder(val placeholder: String) {
     PRINTF("%s"), SLF4J("{}"), NONE("%s");
 }

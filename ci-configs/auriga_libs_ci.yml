@@ -25,7 +25,7 @@ annotationPublish:
     paths:
       - auriga-annotations/build/libs/*.jar
     expire_in: 1 month
-    
+
 configBuild:
   stage: lib-build
   script:

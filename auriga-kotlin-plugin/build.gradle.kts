@@ -52,6 +52,7 @@ kapt {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
     compileOnly(kotlin("compiler-embeddable"))
 
     implementation("de.menkalian.auriga:auriga-config:$version")
