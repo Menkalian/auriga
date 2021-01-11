@@ -33,7 +33,12 @@ class AurigaClassBuilder(val config: AurigaConfig, private val delegateBuilder: 
             override fun visitCode() {
                 super.visitCode()
                 InstructionAdapter(this).apply {
-                    getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
+                    if (config.base == "SLF4J") {
+                        visitLdcInsn("Auriga")
+                        invokestatic("org/slf4j/LoggerFactory", "getLogger", "(Ljava/lang/String;)Lorg/slf4j/Logger;", false)
+                    } else {
+                        getstatic("java/lang/System", "out", "Ljava/io/PrintStream;")
+                    }
                     anew(Type.getType(StringBuilder::class.java))
                     dup()
                     invokespecial("java/lang/StringBuilder", "<init>", "()V", false)
@@ -79,7 +84,11 @@ class AurigaClassBuilder(val config: AurigaConfig, private val delegateBuilder: 
                         }
                     }
                     invokevirtual("java/lang/Object", "toString", "()Ljava/lang/String;", false)
-                    invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/String;)V", false)
+                    if (config.base == "SLF4J") {
+                        invokeinterface("org/slf4j/Logger", "debug", "(Ljava/lang/String;)V")
+                    } else {
+                        invokevirtual("java/io/PrintStream", "println", "(Ljava/lang/String;)V", false)
+                    }
                 }
             }
         }
