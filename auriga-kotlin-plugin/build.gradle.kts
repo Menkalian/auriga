@@ -55,6 +55,7 @@ dependencies {
     implementation(kotlin("reflect"))
     compileOnly(kotlin("compiler-embeddable"))
 
+    implementation("de.menkalian.auriga:auriga-annotations:$version")
     implementation("de.menkalian.auriga:auriga-config:$version")
 
     compileOnly("com.google.auto.service:auto-service:1.0-rc7")
