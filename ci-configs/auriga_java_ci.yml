@@ -23,5 +23,5 @@ javaDeploy:
     - main
   artifacts:
     paths:
-      - auriga-java-processor/build/*.jar
+      - auriga-java-processor/build/libs/*.jar
     expire_in: 1 month

@@ -26,5 +26,5 @@ kotlinPluginPublish:
     - gradle publish
   artifacts:
     paths:
-      - auriga-kotlin-plugin/build/*.jar
+      - auriga-kotlin-plugin/build/libs/*.jar
     expire_in: 1 month

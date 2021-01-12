@@ -28,7 +28,7 @@ gradlePluginPublish:
     - main
   artifacts:
     paths:
-      - auriga-gradle-plugin/build/*.jar
+      - auriga-gradle-plugin/build/libs/*.jar
     expire_in: 1 month
 
 #mavenPluginBuild:
