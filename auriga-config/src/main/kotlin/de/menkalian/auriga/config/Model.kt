@@ -22,14 +22,41 @@ open class AurigaConfig(val type: String = "FILE", val location: String = "aurig
             val f = File(location)
             val props = Properties()
 
-            if (location.endsWith(".xml")) {
-                props.loadFromXML(f.inputStream())
-            } else {
-                props.load(f.inputStream())
+            if (f.exists()) {
+                if (location.endsWith(".xml")) {
+                    props.loadFromXML(f.inputStream())
+                } else {
+                    props.load(f.inputStream())
+                }
             }
             loadConfigFromMap(props)
+            if (!f.exists()) {
+                saveToFile(f)
+            }
         } else if (type == "ARGS") {
             loadConfigFromMap(map)
+        }
+    }
+
+    private fun saveToFile(f: File) {
+        val props = Properties()
+
+        props[Auriga.Config.base] = base
+
+        props[Auriga.Logging.mode] = loggingConfig.mode
+        props[Auriga.Logging.method] = loggingConfig.method
+        props[Auriga.Logging.placeholder] = loggingConfig.placeholder
+        props[Auriga.Logging.Template.entry] = loggingConfig.entryTemplate
+        props[Auriga.Logging.Template.param] = loggingConfig.paramTemplate
+
+        props[Auriga.Logger.type] = loggerConfig.type
+        props[Auriga.Logger.clazz] = loggerConfig.clazz
+        props[Auriga.Logger.source] = loggerConfig.source
+
+        if (f.name.endsWith(".xml")) {
+            props.storeToXML(f.outputStream(), "Generated from Auriga")
+        } else {
+            props.store(f.outputStream(), "Generated from Auriga")
         }
     }
 
