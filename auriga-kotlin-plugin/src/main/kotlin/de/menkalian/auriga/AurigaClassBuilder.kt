@@ -9,6 +9,14 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.descriptorUtil.parents
 import org.jetbrains.kotlin.resolve.descriptorUtil.parentsWithSelf
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin
+import org.jetbrains.kotlin.types.typeUtil.isBooleanOrNullableBoolean
+import org.jetbrains.kotlin.types.typeUtil.isByte
+import org.jetbrains.kotlin.types.typeUtil.isChar
+import org.jetbrains.kotlin.types.typeUtil.isDouble
+import org.jetbrains.kotlin.types.typeUtil.isFloat
+import org.jetbrains.kotlin.types.typeUtil.isInt
+import org.jetbrains.kotlin.types.typeUtil.isLong
+import org.jetbrains.kotlin.types.typeUtil.isShort
 import org.jetbrains.org.objectweb.asm.MethodVisitor
 import org.jetbrains.org.objectweb.asm.Opcodes
 import org.jetbrains.org.objectweb.asm.Type
@@ -52,25 +60,81 @@ class AurigaClassBuilder(val config: AurigaConfig, private val delegateBuilder: 
                         it.split("}}").forEach {
                             when (it) {
                                 "THIS"   -> {
-                                    visitVarInsn(Opcodes.ALOAD, -1)
+                                    visitVarInsn(Opcodes.ALOAD, 0) // aload_0 is this
                                     invokevirtual("java/lang/Object", "toString", "()Ljava/lang/String;", false)
                                     invokevirtual("java/lang/StringBuilder", "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;", false)
                                 }
                                 "PARAMS" -> {
-                                    function.valueParameters.forEachIndexed { i, parameterDescriptor ->
+                                    var index = 0
+                                    function.valueParameters.forEach {parameterDescriptor ->
                                         val paramTemplate = config.loggingConfig.paramTemplate
                                             .replace(Placeholder.PARAM_NAME, parameterDescriptor.name.identifier)
                                             .replace(Placeholder.PARAM_TYPE, parameterDescriptor.type.toString())
-                                        val paramTemplateSplit = paramTemplate.split(Regex.fromLiteral("(\\{\\{)|(\\}\\})"))
+                                        val paramTemplateSplit = paramTemplate.split("{{")
                                         paramTemplateSplit.forEach {
-                                            when (it) {
-                                                "PARAM_VALUE" -> {
-                                                    visitVarInsn(Opcodes.ALOAD, i + 1)
-                                                    invokevirtual("java/lang/StringBuilder", "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;", false)
-                                                }
-                                                else          -> {
-                                                    visitLdcInsn(it)
-                                                    invokevirtual("java/lang/StringBuilder", "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;", false)
+                                            it.split("}}").forEach {
+                                                when (it) {
+                                                    "PARAM_VALUE" -> {
+                                                        val type = parameterDescriptor.type
+                                                        when {
+                                                            type.isBooleanOrNullableBoolean()       -> {
+                                                                visitVarInsn(Opcodes.ILOAD, ++index)
+                                                                invokestatic("java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false)
+                                                            }
+                                                            type.isByte()                           -> {
+                                                                visitVarInsn(Opcodes.ILOAD, ++index)
+                                                                invokestatic("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;", false)
+                                                            }
+                                                            type.isShort()                          -> {
+                                                                visitVarInsn(Opcodes.ILOAD, ++index)
+                                                                invokestatic("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false)
+                                                            }
+                                                            type.isInt()                            -> {
+                                                                visitVarInsn(Opcodes.ILOAD, ++index)
+                                                                invokestatic("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false)
+                                                            }
+                                                            type.isLong()                           -> {
+                                                                visitVarInsn(Opcodes.LLOAD, ++index)
+                                                                invokestatic("java/lang/Long", "valueOf", "(L)Ljava/lang/Long;", false)
+                                                            }
+                                                            type.isChar()                           -> {
+                                                                visitVarInsn(Opcodes.ILOAD, ++index)
+                                                                invokestatic("java/lang/Character", "valueOf", "(C)Ljava/lang/Character;", false)
+                                                            }
+                                                            type.isFloat()                          -> {
+                                                                visitVarInsn(Opcodes.FLOAD, ++index)
+                                                                invokestatic("java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false)
+                                                            }
+                                                            type.isDouble()                         -> {
+                                                                visitVarInsn(Opcodes.DLOAD, ++index)
+                                                                invokestatic("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;", false)
+                                                            }
+                                                            type.toString().contains("Array", true) -> {
+                                                                index += 2
+                                                                visitVarInsn(Opcodes.ALOAD, index)
+                                                                invokestatic("java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;", false)
+                                                            }
+                                                            else                                    -> {
+                                                                visitVarInsn(Opcodes.ALOAD, ++index)
+                                                                invokestatic("java/util/Objects", "toString", "(Ljava/lang/Object;)Ljava/lang/String;", false)
+                                                            }
+                                                        }
+                                                        invokevirtual(
+                                                            "java/lang/StringBuilder",
+                                                            "append",
+                                                            "(Ljava/lang/Object;)Ljava/lang/StringBuilder;",
+                                                            false
+                                                        )
+                                                    }
+                                                    else          -> {
+                                                        visitLdcInsn(it)
+                                                        invokevirtual(
+                                                            "java/lang/StringBuilder",
+                                                            "append",
+                                                            "(Ljava/lang/Object;)Ljava/lang/StringBuilder;",
+                                                            false
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }
