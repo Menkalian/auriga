@@ -7,6 +7,7 @@ import de.menkalian.auriga.config.AurigaConfig
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.tasks.compile.JavaCompile
+import java.io.File
 import java.net.URI
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicBoolean
@@ -60,7 +61,7 @@ class AurigaGradlePlugin : org.gradle.api.Plugin<Project> {
             val optionsWithKey = extension.getOptionsWithKey()
             // If any templates are given, we need to use a temporary file, since multiline-parameters can cause issues
             if (extension.type == "ARGS" && optionsWithKey.any { Auriga.Logging.Template.getKeys().contains(it.key) }) {
-                val temporaryConfigFile = createTempFile("auriga_cfg", ".xml").absoluteFile
+                val temporaryConfigFile = File.createTempFile("auriga_cfg", ".xml")
                 val config = AurigaConfig(Collections.unmodifiableMap(optionsWithKey))
                 config.saveToFile(temporaryConfigFile)
 

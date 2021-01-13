@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
+import java.io.File
 import java.util.Collections
 
 class AurigaGradleSubplugin : KotlinCompilerPluginSupportPlugin {
@@ -17,7 +18,7 @@ class AurigaGradleSubplugin : KotlinCompilerPluginSupportPlugin {
             val optionsWithKey = extension.getOptionsWithKey()
             val optionsList =
                 if (extension.type == "ARGS" && optionsWithKey.any { Auriga.Logging.Template.getKeys().contains(it.key) }) {
-                    val temporaryConfigFile = createTempFile("auriga_cfg", ".xml").absoluteFile
+                    val temporaryConfigFile = File.createTempFile("auriga_cfg", ".xml")
                     val config = AurigaConfig(Collections.unmodifiableMap(optionsWithKey))
                     config.saveToFile(temporaryConfigFile)
 
