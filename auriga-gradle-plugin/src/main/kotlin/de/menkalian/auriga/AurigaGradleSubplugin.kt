@@ -43,7 +43,7 @@ class AurigaGradleSubplugin : KotlinCompilerPluginSupportPlugin {
 
     override fun getPluginArtifact(): SubpluginArtifact {
         return SubpluginArtifact(
-            groupId = "de.menkalian.auriga", artifactId = "auriga-kotlin-plugin", version = "1.0.0"
+            groupId = "de.menkalian.auriga", artifactId = "auriga-kotlin-plugin", version = "1.0.1"
         )
     }
 

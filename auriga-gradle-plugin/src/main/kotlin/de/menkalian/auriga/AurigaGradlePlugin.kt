@@ -55,7 +55,7 @@ class AurigaGradlePlugin : org.gradle.api.Plugin<Project> {
     private fun applyJavaParams(project: Project) {
         applyBaseIfNotAlreadyApplied(project)
 
-        project.dependencies.add("annotationProcessor", "de.menkalian.auriga:auriga-java-processor:1.0.0")
+        project.dependencies.add("annotationProcessor", "de.menkalian.auriga:auriga-java-processor:1.0.1")
 
         project.afterEvaluate {
             val optionsWithKey = extension.getOptionsWithKey()
@@ -76,7 +76,7 @@ class AurigaGradlePlugin : org.gradle.api.Plugin<Project> {
     private fun applyBaseIfNotAlreadyApplied(project: Project) {
         if (!baseApplied.getAndSet(true)) {
             // Add the Annotations dependency
-            project.dependencies.add("implementation", "de.menkalian.auriga:auriga-annotations:1.0.0")
+            project.dependencies.add("implementation", "de.menkalian.auriga:auriga-annotations:1.0.1")
         }
     }
 

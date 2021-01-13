@@ -4,7 +4,7 @@
 
     <groupId>de.menkalian.auriga</groupId>
     <artifactId>auriga-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>maven-plugin</packaging>
 
     <description>Plugin for simply using Auriga in a maven project</description>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>de.menkalian.auriga</groupId>
             <artifactId>auriga-config</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
     </dependencies>
 

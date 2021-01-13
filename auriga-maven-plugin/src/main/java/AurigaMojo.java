@@ -69,7 +69,7 @@ public class AurigaMojo extends AbstractMojo {
             Dependency aurigaAnnotationsDependency = new Dependency();
             aurigaAnnotationsDependency.setGroupId("de.menkalian.auriga");
             aurigaAnnotationsDependency.setGroupId("auriga-annotations");
-            aurigaAnnotationsDependency.setGroupId("1.0.0");
+            aurigaAnnotationsDependency.setGroupId("1.0.1");
         }
 
         Plugin compilerPlugin = project.getBuild().getPluginsAsMap().get("org.apache.maven.plugins:maven-compiler-plugin");

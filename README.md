@@ -27,7 +27,7 @@ and apply the plugin in your `build.gradle`:
 ```groovy
 plugins {
     /*other plugins...*/
-    id 'de.menkalian.auriga' version '1.0.0'
+    id 'de.menkalian.auriga' version '1.0.1'
 }
 ```
 
@@ -63,7 +63,7 @@ pluginManagement {
 ```groovy
 plugins {
     /*other plugins...*/
-    id("de.menkalian.auriga") version "1.0.0"
+    id("de.menkalian.auriga") version "1.0.1"
 }
 ```
 
@@ -79,7 +79,7 @@ For Maven only Java is supported (in theory Kotlin could be possible, but I can'
         <dependency>
             <groupId>de.menkalian.auriga</groupId>
             <artifactId>auriga-annotations</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
     </dependencies>
 
@@ -102,7 +102,7 @@ For Maven only Java is supported (in theory Kotlin could be possible, but I can'
                         <path>
                             <groupId>de.menkalian.auriga</groupId>
                             <artifactId>auriga-java-processor</artifactId>
-                            <version>1.0.0</version>
+                            <version>1.0.1</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
