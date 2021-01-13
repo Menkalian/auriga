@@ -2,10 +2,13 @@
 
 package de.menkalian.auriga
 
+import de.menkalian.auriga.config.Auriga
+import de.menkalian.auriga.config.AurigaConfig
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.tasks.compile.JavaCompile
 import java.net.URI
+import java.util.Collections
 import java.util.concurrent.atomic.AtomicBoolean
 
 const val EXTENSION_NAME = "auriga"
@@ -54,7 +57,18 @@ class AurigaGradlePlugin : org.gradle.api.Plugin<Project> {
         project.dependencies.add("annotationProcessor", "de.menkalian.auriga:auriga-java-processor:1.0.0")
 
         project.afterEvaluate {
-            extension.getOptionsWithKey().forEach { addJavacOption(project, it.key, it.value) }
+            val optionsWithKey = extension.getOptionsWithKey()
+            // If any templates are given, we need to use a temporary file, since multiline-parameters can cause issues
+            if (extension.type == "ARGS" && optionsWithKey.any { Auriga.Logging.Template.getKeys().contains(it.key) }) {
+                val temporaryConfigFile = createTempFile("auriga_cfg", ".xml").absoluteFile
+                val config = AurigaConfig(Collections.unmodifiableMap(optionsWithKey))
+                config.saveToFile(temporaryConfigFile)
+
+                addJavacOption(project, Auriga.Config.type, "FILE")
+                addJavacOption(project, Auriga.Config.location, temporaryConfigFile.absolutePath)
+            } else {
+                optionsWithKey.forEach { addJavacOption(project, it.key, it.value) }
+            }
         }
     }
 

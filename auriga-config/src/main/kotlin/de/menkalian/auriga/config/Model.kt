@@ -38,7 +38,7 @@ open class AurigaConfig(val type: String = "FILE", val location: String = "aurig
         }
     }
 
-    private fun saveToFile(f: File) {
+    fun saveToFile(f: File) {
         val props = Properties()
 
         props[Auriga.Config.base] = base

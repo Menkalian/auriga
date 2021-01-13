@@ -1,17 +1,34 @@
 package de.menkalian.auriga
 
+import de.menkalian.auriga.config.Auriga
+import de.menkalian.auriga.config.AurigaConfig
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
+import java.util.Collections
 
 class AurigaGradleSubplugin : KotlinCompilerPluginSupportPlugin {
 
     override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> {
         return kotlinCompilation.target.project.provider {
             val extension = kotlinCompilation.target.project.auriga()
-            val optionsList = extension.getOptionsWithKey().map { SubpluginOption(it.key, it.value) }
+            val optionsWithKey = extension.getOptionsWithKey()
+            val optionsList =
+                if (extension.type == "ARGS" && optionsWithKey.any { Auriga.Logging.Template.getKeys().contains(it.key) }) {
+                    val temporaryConfigFile = createTempFile("auriga_cfg", ".xml").absoluteFile
+                    val config = AurigaConfig(Collections.unmodifiableMap(optionsWithKey))
+                    config.saveToFile(temporaryConfigFile)
+
+                    listOf(
+                        SubpluginOption(Auriga.Config.type, "FILE"),
+                        SubpluginOption(Auriga.Config.location, temporaryConfigFile.absolutePath)
+                    )
+                } else {
+                    optionsWithKey.map { SubpluginOption(it.key, it.value) }
+                }
+
             val logger = kotlinCompilation.target.project.logger
             logger.info("Applying auriga kotlin plugin")
             logger.debug("auriga-kotlin-plugin options:")
