@@ -4,6 +4,7 @@ import de.menkalian.auriga.config.AurigaConfig
 import de.menkalian.auriga.config.Placeholder
 import org.jetbrains.kotlin.codegen.ClassBuilder
 import org.jetbrains.kotlin.codegen.DelegatingClassBuilder
+import org.jetbrains.kotlin.codegen.isJvmStaticInObjectOrClassOrInterface
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.descriptorUtil.parents
@@ -60,13 +61,18 @@ class AurigaClassBuilder(val config: AurigaConfig, private val delegateBuilder: 
                         it.split("}}").forEach {
                             when (it) {
                                 "THIS"   -> {
-                                    visitVarInsn(Opcodes.ALOAD, 0) // aload_0 is this
-                                    invokevirtual("java/lang/Object", "toString", "()Ljava/lang/String;", false)
-                                    invokevirtual("java/lang/StringBuilder", "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;", false)
+                                    if (function.isJvmStaticInObjectOrClassOrInterface() || function.parents.first().name.toString() != thisName || function.name.toString() == "<init>" || function.name.toString() == "<cinit>") {
+                                        visitLdcInsn("$thisName.class")
+                                        invokevirtual("java/lang/StringBuilder", "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;", false)
+                                    } else {
+                                        visitVarInsn(Opcodes.ALOAD, 0) // aload_0 is this
+                                        invokevirtual("java/lang/Object", "toString", "()Ljava/lang/String;", false)
+                                        invokevirtual("java/lang/StringBuilder", "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;", false)
+                                    }
                                 }
                                 "PARAMS" -> {
                                     var index = 0
-                                    function.valueParameters.forEach {parameterDescriptor ->
+                                    function.valueParameters.forEach { parameterDescriptor ->
                                         val paramTemplate = config.loggingConfig.paramTemplate
                                             .replace(Placeholder.PARAM_NAME, parameterDescriptor.name.identifier)
                                             .replace(Placeholder.PARAM_TYPE, parameterDescriptor.type.toString())
