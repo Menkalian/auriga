@@ -21,8 +21,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,45 +31,8 @@ public class JavacLogProcessor extends AbstractProcessor {
     TreeMaker instance;
     JavacElements elementUtils;
     AurigaConfig config;
-    private Set<? extends Element> excludedElements;
 
-    @Override
-    public boolean process (Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if (processingEnvironment != null) {
-            Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Log.class);
-            excludedElements = roundEnv.getElementsAnnotatedWith(NoLog.class);
-            for (Element element : elements) {
-                processElement(element);
-            }
-            return true;
-        }
-
-        return false;
-    }
-
-    public void processElement (Element element) {
-        if (excludedElements.contains(element))
-            return;
-
-        processingEnvironment.getMessager().printMessage(Diagnostic.Kind.NOTE, "AURIGA: Processing " + element);
-        ElementKind elementKind = element.getKind();
-        if (
-                elementKind == ElementKind.PACKAGE ||
-                elementKind == ElementKind.CLASS ||
-                elementKind == ElementKind.ENUM ||
-                elementKind == ElementKind.INTERFACE ||
-                elementKind == ElementKind.ANNOTATION_TYPE
-        ) {
-            processingEnvironment.getMessager().printMessage(Diagnostic.Kind.OTHER, "AURIGA: Processing children of " + element);
-            element.getEnclosedElements().forEach(this::processElement);
-        } else if (
-                elementKind == ElementKind.METHOD ||
-                elementKind == ElementKind.CONSTRUCTOR
-        ) {
-            processingEnvironment.getMessager().printMessage(Diagnostic.Kind.OTHER, "AURIGA: Generating Logs for " + element);
-            generateHeaderLogsForMethod(element);
-        }
-    }
+    private java.util.List<Element> processed = new LinkedList<>();
 
     @Override
     public synchronized void init (ProcessingEnvironment processingEnv) {
@@ -81,6 +44,70 @@ public class JavacLogProcessor extends AbstractProcessor {
         // Load config
         Map<String, String> options = processingEnvironment.getOptions();
         config = new AurigaConfig(Collections.unmodifiableMap(options));
+    }
+
+    @Override
+    public boolean process (Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        if (processingEnvironment != null) {
+            for (Element element : roundEnv.getRootElements()) {
+                processElement(element);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public void processElement (Element element) {
+        if (element.getAnnotation(NoLog.class) != null)
+            return;
+
+        ElementKind elementKind = element.getKind();
+        if (
+                elementKind == ElementKind.PACKAGE ||
+                elementKind == ElementKind.CLASS ||
+                elementKind == ElementKind.ENUM ||
+                elementKind == ElementKind.INTERFACE ||
+                elementKind == ElementKind.ANNOTATION_TYPE
+        ) {
+            element.getEnclosedElements().forEach(this::processElement);
+        } else if (
+                elementKind == ElementKind.METHOD ||
+                elementKind == ElementKind.CONSTRUCTOR
+        ) {
+            // Determine default value
+            boolean processElement;
+            switch (config.getLoggingConfig().getMode()) {
+                case "DEFAULT_ON":
+                    processElement = true;
+                    break;
+
+                case "DEFAULT_OFF":
+                default:
+                    processElement = false;
+                    break;
+            }
+
+            Element tmp = element;
+
+            do {
+                if (tmp.getAnnotation(Log.class) != null) {
+                    processElement = true;
+                    break;
+                }
+                if (tmp.getAnnotation(NoLog.class) != null) {
+                    processElement = false;
+                    break;
+                }
+                tmp = tmp.getEnclosingElement();
+            } while (tmp != null);
+
+            if (processElement && !processed.contains(element)) {
+                processed.add(element);
+                generateHeaderLogsForMethod(element);
+            }
+        }
     }
 
     private void generateHeaderLogsForMethod (Element method) {
