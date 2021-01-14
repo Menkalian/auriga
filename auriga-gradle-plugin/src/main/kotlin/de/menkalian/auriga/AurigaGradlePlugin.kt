@@ -37,6 +37,10 @@ class AurigaGradlePlugin : org.gradle.api.Plugin<Project> {
             applyBaseIfNotAlreadyApplied(project)
             project.pluginManager.apply(AurigaGradleSubplugin::class.java)
         }
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.android") {
+            applyBaseIfNotAlreadyApplied(project)
+            project.pluginManager.apply(AurigaGradleSubplugin::class.java)
+        }
 
         // Check if java is present
         project.pluginManager.withPlugin("java") {
