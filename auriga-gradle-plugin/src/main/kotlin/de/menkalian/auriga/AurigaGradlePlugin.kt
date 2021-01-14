@@ -20,7 +20,7 @@ class AurigaGradlePlugin : org.gradle.api.Plugin<Project> {
 
     override fun apply(project: Project) {
         // Add the repository if needed
-        if (project.repositories.any {
+        if (project.repositories.none {
                 if (it is MavenArtifactRepository) {
                     it.url.toString() == "http://server.menkalian.de:8081/artifactory/auriga"
                 } else false
