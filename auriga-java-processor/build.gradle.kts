@@ -11,24 +11,14 @@ if (System.getenv("CI_COMMIT_BRANCH") != "main" && System.getenv("CI_COMMIT_BRAN
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_9
-    targetCompatibility = JavaVersion.VERSION_1_9
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 tasks.withType(JavaCompile::class) {
     options.compilerArgs.addAll(
         listOf(
-            "-proc:none",
-            "--add-exports",
-            "jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED",
-            "--add-exports",
-            "jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED",
-            "--add-exports",
-            "jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
-            "--add-exports",
-            "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
-            "--add-exports",
-            "jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED"
+            "-proc:none"
         )
     )
 }
