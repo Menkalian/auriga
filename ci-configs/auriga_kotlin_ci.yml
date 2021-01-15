@@ -1,6 +1,6 @@
 kotlinPluginBuild:
   stage: processor-build
-  image: gradle:6.7
+  image: gradle:6.8
   script:
     - cd auriga-kotlin-plugin
     - gradle publishToMavenLocal
@@ -11,14 +11,14 @@ kotlinPluginBuild:
 
 kotlinPluginTest:
   stage: processor-test
-  image: gradle:6.7
+  image: gradle:6.8
   script:
     - cd auriga-kotlin-plugin
     - gradle test
 
 kotlinPluginPublish:
   stage: processor-deploy
-  image: gradle:6.7
+  image: gradle:6.8
   only:
     - main
   script:

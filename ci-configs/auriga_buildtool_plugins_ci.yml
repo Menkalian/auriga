@@ -1,6 +1,6 @@
 gradlePluginBuild:
   stage: tools-build
-  image: gradle:6.7
+  image: gradle:6.8
   dependencies:
     - kotlinPluginBuild
   script:
@@ -13,14 +13,14 @@ gradlePluginBuild:
 
 gradlePluginTest:
   stage: tools-test
-  image: gradle:6.7
+  image: gradle:6.8
   script:
     - cd auriga-gradle-plugin
     - gradle test
 
 gradlePluginPublish:
   stage: tools-deploy
-  image: gradle:6.7
+  image: gradle:6.8
   script:
     - cd auriga-gradle-plugin
     - gradle publish
