@@ -71,8 +71,15 @@ class AurigaClassBuilder(val config: AurigaConfig, private val delegateBuilder: 
                                     }
                                 }
                                 "PARAMS" -> {
-                                    var index = 0
+                                    var index =
+                                        if (function.isJvmStaticInObjectOrClassOrInterface() || function.parents.first().name.toString() != thisName || function.name.toString() == "<init>" || function.name.toString() == "<cinit>") {
+                                            1
+                                        } else {
+                                            0
+                                        }
+                                    val tmp = org.jetbrains.kotlin.konan.file.createTempFile("AurigaParam", ".txt")
                                     function.valueParameters.forEach { parameterDescriptor ->
+                                        tmp.writeText(parameterDescriptor.index.toString())
                                         val paramTemplate = config.loggingConfig.paramTemplate
                                             .replace(Placeholder.PARAM_NAME, parameterDescriptor.name.identifier)
                                             .replace(Placeholder.PARAM_TYPE, parameterDescriptor.type.toString())
