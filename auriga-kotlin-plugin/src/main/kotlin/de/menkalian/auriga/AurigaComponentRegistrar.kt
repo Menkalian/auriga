@@ -14,7 +14,6 @@ class AurigaComponentRegistrar : ComponentRegistrar {
     override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
         val mapFromCompilerConfig = getMapFromCompilerConfig(configuration)
         val config = AurigaConfig(mapFromCompilerConfig)
-        org.jetbrains.kotlin.konan.file.createTempFile("AURIGA").writeText(config.toString())
         ClassBuilderInterceptorExtension.registerExtension(
             project, AurigaClassGenerationInterceptor(
                 config
