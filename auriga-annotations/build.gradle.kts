@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "de.menkalian.auriga"
-version = "1.0.1"
+version = "1.0.2"
 
 if (System.getenv("CI_COMMIT_BRANCH") != "main" && System.getenv("CI_COMMIT_BRANCH") != null) {
     version = "${version}-${System.getenv("CI_COMMIT_BRANCH")}-SNAPSHOT"
