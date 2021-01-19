@@ -121,8 +121,7 @@ class AurigaClassBuilder(val config: AurigaConfig, private val delegateBuilder: 
                                                                 invokestatic("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;", false)
                                                             }
                                                             type.toString().contains("Array", true) -> {
-                                                                index += 2
-                                                                visitVarInsn(Opcodes.ALOAD, index)
+                                                                visitVarInsn(Opcodes.ALOAD, ++index)
                                                                 invokestatic("java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;", false)
                                                             }
                                                             else                                    -> {
