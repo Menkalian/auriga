@@ -178,3 +178,5 @@ auriga {
     }
 }
 ```
+
+###### Note: If anything does not work you may report it here, but the best way of fixing it is probably to annotate that method with @NoLog or fix it yourself and submit a PR. kthxbye
