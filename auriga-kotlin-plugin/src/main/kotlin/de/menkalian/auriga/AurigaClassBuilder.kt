@@ -4,12 +4,14 @@ import de.menkalian.auriga.config.AurigaConfig
 import de.menkalian.auriga.config.Placeholder
 import org.jetbrains.kotlin.codegen.ClassBuilder
 import org.jetbrains.kotlin.codegen.DelegatingClassBuilder
+import org.jetbrains.kotlin.codegen.inline.parameterOffsets
 import org.jetbrains.kotlin.codegen.isJvmStaticInObjectOrClassOrInterface
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.descriptorUtil.parents
 import org.jetbrains.kotlin.resolve.descriptorUtil.parentsWithSelf
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin
+import org.jetbrains.kotlin.resolve.jvm.jvmSignature.JvmMethodParameterSignature
 import org.jetbrains.kotlin.types.typeUtil.isBooleanOrNullableBoolean
 import org.jetbrains.kotlin.types.typeUtil.isByte
 import org.jetbrains.kotlin.types.typeUtil.isChar
@@ -51,7 +53,6 @@ class AurigaClassBuilder(val config: AurigaConfig, private val delegateBuilder: 
                     anew(Type.getType(StringBuilder::class.java))
                     dup()
                     invokespecial("java/lang/StringBuilder", "<init>", "()V", false)
-
                     val template = config.loggingConfig.entryTemplate
                         .replace(Placeholder.METHOD, function.name.toString())
                         .replace(Placeholder.CLASS, function.parents.first().name.toString())
@@ -107,6 +108,7 @@ class AurigaClassBuilder(val config: AurigaConfig, private val delegateBuilder: 
                                                             type.isLong()                           -> {
                                                                 visitVarInsn(Opcodes.LLOAD, ++index)
                                                                 invokestatic("java/lang/Long", "valueOf", "(L)Ljava/lang/Long;", false)
+                                                                index++ // Long increases address by 2
                                                             }
                                                             type.isChar()                           -> {
                                                                 visitVarInsn(Opcodes.ILOAD, ++index)
@@ -119,6 +121,7 @@ class AurigaClassBuilder(val config: AurigaConfig, private val delegateBuilder: 
                                                             type.isDouble()                         -> {
                                                                 visitVarInsn(Opcodes.DLOAD, ++index)
                                                                 invokestatic("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;", false)
+                                                                index++ // Double increases address by 2
                                                             }
                                                             type.toString().contains("Array", true) -> {
                                                                 visitVarInsn(Opcodes.ALOAD, ++index)
